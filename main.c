@@ -10,6 +10,18 @@ int32x4_t b = {5, 6, 7, 8};
 int32x4_t c = {9, 10, 11, 12};
 int32x4_t d = {13, 14, 15, 16};
 
+// Matrix U
+int32x4_t u_1 = {1,0,0,0};
+int32x4_t u_2 = {0,1,0,0};
+int32x4_t u_3 = {0,0,1,0};
+int32x4_t u_4 = {0,0,0,1};
+
+// Matrix V^T
+int32x4_t vt_1 = {1,0,0,0};
+int32x4_t vt_2 = {0,1,0,0};
+int32x4_t vt_3 = {0,0,1,0};
+int32x4_t vt_4 = {0,0,0,1};
+
 // Define fixed-point angle constants (Q15 format)
 #define ANGLE_0     0
 #define ANGLE_45    16384
