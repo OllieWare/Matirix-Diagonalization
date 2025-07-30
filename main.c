@@ -5,10 +5,11 @@
 #include <stdlib.h>
 
 FILE* f;
-int32x4_t a = {1, 2, 3, 4};
-int32x4_t b = {5, 6, 7, 8};
-int32x4_t c = {9, 10, 11, 12};
-int32x4_t d = {13, 14, 15, 16};
+// Matrix M
+int32x4_t m_1 = {0,0,0,0};
+int32x4_t m_2 = {0,0,0,0};
+int32x4_t m_3 = {0,0,0,0};
+int32x4_t m_4 = {0,0,0,0};
 
 // Matrix U
 int32x4_t u_1 = {1,0,0,0};
@@ -79,6 +80,61 @@ void set_rotation(int16_t angle_category) {
     rot_right = (int16x4_t) {angles.cos_q15, angles.sin_q15, -angles.sin_q15, angles.cos_q15};
 }
 
+void transpose_32x2x2(int32x4_t* M) {
+    int32x2_t ah = vget_high_s32(M[0]);
+    int32x2_t al = vget_low_s32(M[0]);
+    int32x2_t bh = vget_high_s32(M[1]);
+    int32x2_t bl = vget_low_s32(M[1]);
+    int32x2_t ch = vget_high_s32(M[2]);
+    int32x2_t cl = vget_low_s32(M[2]);
+    int32x2_t dh = vget_high_s32(M[3]);
+    int32x2_t dl = vget_low_s32(M[3]);
+    int32x4_t aa = vcombine_s32(al, cl);
+    int32x4_t bb = vcombine_s32(bl, dl);
+    int32x4_t cc = vcombine_s32(ah, ch);
+    int32x4_t dd = vcombine_s32(bh, dh);
+    M[0] = aa;
+    M[1] = bb;
+    M[2] = cc;
+    M[3] = dd;
+}
+
+void transpose_32x2(int32x4_t* M) {
+    int32x4x2_t temp;
+    temp = vtrnq_s32(M[0], M[1]);
+    M[0] = temp.val[0];
+    M[1] = temp.val[1];
+}
+
+void transpose_32x4(int32x4_t* M) {
+    // int32x4x2_t temp;
+    // temp = vtrnq_s32(M[0], M[1]);
+    // M[0] = temp.val[0];
+    // M[1] = temp.val[1];
+    transpose_32x2(M);
+    // temp = vtrnq_s32(M[2], M[3]);
+    // M[2] = temp.val[0];
+    // M[3] = temp.val[1];
+    transpose_32x2(M+2);
+    // int32x2_t ah = vget_high_s32(M[0]);
+    // int32x2_t al = vget_low_s32(M[0]);
+    // int32x2_t bh = vget_high_s32(M[1]);
+    // int32x2_t bl = vget_low_s32(M[1]);
+    // int32x2_t ch = vget_high_s32(M[2]);
+    // int32x2_t cl = vget_low_s32(M[2]);
+    // int32x2_t dh = vget_high_s32(M[3]);
+    // int32x2_t dl = vget_low_s32(M[3]);
+    // int32x4_t aa = vcombine_s32(al, cl);
+    // int32x4_t bb = vcombine_s32(bl, dl);
+    // int32x4_t cc = vcombine_s32(ah, ch);
+    // int32x4_t dd = vcombine_s32(bh, dh);
+    // M[0] = aa;
+    // M[1] = bb;
+    // M[2] = cc;
+    // M[3] = dd;
+    transpose_32x2x2(M);
+}
+
 int main() {
     // f = fopen("matrix.txt", "r");
     // if ((f == NULL)) {
@@ -87,50 +143,52 @@ int main() {
     //     return 1;  
     // }
     // fclose(f);
-    int32x4_t matrix[4] = {a, b, c, d};
+    int32x4_t U[4] = {u_1, u_2, u_3, u_4};
+    int32x4_t VT[4] = {vt_1, vt_2, vt_3, vt_4};
+    int32x4_t M[4] = {m_1, m_2, m_3, m_4};
     int i;
     int j;
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            printf("%.2d ", vgetq_lane_s32(matrix[i], j));
+            printf("%.2d ", vgetq_lane_s32(M[i], j));
         }
         printf("\n");
     }
     printf("\n");
-    int32x4x2_t temp;
-    temp = vtrnq_s32(a, b);
-    matrix[0] = temp.val[0];
-    matrix[1] = temp.val[1];
-    temp = vtrnq_s32(c, d);
-    matrix[2] = temp.val[0];
-    matrix[3] = temp.val[1];
+    // int32x4x2_t temp;
+    // temp = vtrnq_s32(M[0], M[1]);
+    // M[0] = temp.val[0];
+    // M[1] = temp.val[1];
+    // temp = vtrnq_s32(M[2], M[3]);
+    // M[2] = temp.val[0];
+    // M[3] = temp.val[1];
+    // for (i = 0; i < 4; i++) {
+    //     for (j = 0; j < 4; j++) {
+    //         printf("%.2d ", vgetq_lane_s32(M[i], j));
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n");
+    // int32x2_t ah = vget_high_s32(M[0]);
+    // int32x2_t al = vget_low_s32(M[0]);
+    // int32x2_t bh = vget_high_s32(M[1]);
+    // int32x2_t bl = vget_low_s32(M[1]);
+    // int32x2_t ch = vget_high_s32(M[2]);
+    // int32x2_t cl = vget_low_s32(M[2]);
+    // int32x2_t dh = vget_high_s32(M[3]);
+    // int32x2_t dl = vget_low_s32(M[3]);
+    // int32x4_t aa = vcombine_s32(al, cl);
+    // int32x4_t bb = vcombine_s32(bl, dl);
+    // int32x4_t cc = vcombine_s32(ah, ch);
+    // int32x4_t dd = vcombine_s32(bh, dh);
+    // M[0] = aa;
+    // M[1] = bb;
+    // M[2] = cc;
+    // M[3] = dd;
+    transpose_32x4(M);
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            printf("%.2d ", vgetq_lane_s32(matrix[i], j));
-        }
-        printf("\n");
-    }
-    printf("\n");
-    int32x2_t ah = vget_high_s32(matrix[0]);
-    int32x2_t al = vget_low_s32(matrix[0]);
-    int32x2_t bh = vget_high_s32(matrix[1]);
-    int32x2_t bl = vget_low_s32(matrix[1]);
-    int32x2_t ch = vget_high_s32(matrix[2]);
-    int32x2_t cl = vget_low_s32(matrix[2]);
-    int32x2_t dh = vget_high_s32(matrix[3]);
-    int32x2_t dl = vget_low_s32(matrix[3]);
-    int32x4_t aa = vcombine_s32(al, cl);
-    int32x4_t bb = vcombine_s32(bl, dl);
-    int32x4_t cc = vcombine_s32(ah, ch);
-    int32x4_t dd = vcombine_s32(bh, dh);
-    matrix[0] = aa;
-    matrix[1] = bb;
-    matrix[2] = cc;
-    matrix[3] = dd;
-
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            printf("%.2d ", vgetq_lane_s32(matrix[i], j));
+            printf("%.2d ", vgetq_lane_s32(M[i], j));
         }
         printf("\n");
     }
