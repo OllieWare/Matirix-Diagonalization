@@ -84,6 +84,28 @@ int32_t arctan(int32_t val) {
     return 0;
 }
 
+int32_t cos_t(int32_t theta) {
+    return 0;
+}
+
+int32_t sin_t(int32_t theta) {
+    return 0;
+}
+
+void get_rotatation(int32x2_t* R, int32_t theta) {
+    vset_lane_32(cos_t(theta), R[0], 0);
+    vset_lane_32(-sin_t(theta), R[0], 1);
+    vset_lane_32(sin_t(theta), R[1], 0);
+    vset_lane_32(cos_t(theta), R[1], 1);
+}
+
+void transpose_32x2(int32x2_t* M) {
+    int32x2x2_t temp;
+    temp = vtrn_s32(M[0], M[1]);
+    M[0] = temp.val[0];
+    M[1] = temp.val[1];
+}
+
 void rotate(int32x2_t* M) {
     int sum = (vget_lane_s32(M[1], 0) + vget_lane_s32(M[0], 1)) / (vget_lane_s32(M[1], 1) - vget_lane_s32(M[0], 0));
     int dif = (vget_lane_s32(M[1], 0) - vget_lane_s32(M[0], 1)) / (vget_lane_s32(M[1], 1) + vget_lane_s32(M[0], 0));
@@ -91,9 +113,13 @@ void rotate(int32x2_t* M) {
     dif = arctan(dif);
     int theta_r = (sum + dif) >> 2;
     int theta_l = sum - theta_r;
+    int32x2_t R_L[2] = { {}, {} };
+    int32x2_t R_R[2] = { {}, {} };
+    get_rotatation(R_L, theta_l);
+    get_rotatation(R_R, theta_r);
 }
 
-void transpose_32x2x2(int32x4_t* M) {
+void transpose_32x4x4(int32x4_t* M) {
     int32x2_t ah = vget_high_s32(M[0]);
     int32x2_t al = vget_low_s32(M[0]);
     int32x2_t bh = vget_high_s32(M[1]);
@@ -112,7 +138,7 @@ void transpose_32x2x2(int32x4_t* M) {
     M[3] = dd;
 }
 
-void transpose_32x2(int32x4_t* M) {
+void transpose_32x2x2(int32x4_t* M) {
     int32x4x2_t temp;
     temp = vtrnq_s32(M[0], M[1]);
     M[0] = temp.val[0];
@@ -124,11 +150,11 @@ void transpose_32x4(int32x4_t* M) {
     // temp = vtrnq_s32(M[0], M[1]);
     // M[0] = temp.val[0];
     // M[1] = temp.val[1];
-    transpose_32x2(M);
+    transpose_32x2x2(M);
     // temp = vtrnq_s32(M[2], M[3]);
     // M[2] = temp.val[0];
     // M[3] = temp.val[1];
-    transpose_32x2(M+2);
+    transpose_32x2x2(M+2);
     // int32x2_t ah = vget_high_s32(M[0]);
     // int32x2_t al = vget_low_s32(M[0]);
     // int32x2_t bh = vget_high_s32(M[1]);
@@ -145,7 +171,7 @@ void transpose_32x4(int32x4_t* M) {
     // M[1] = bb;
     // M[2] = cc;
     // M[3] = dd;
-    transpose_32x2x2(M);
+    transpose_32x4x4(M);
 }
 
 int main() {
