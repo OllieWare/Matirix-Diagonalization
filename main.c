@@ -80,6 +80,19 @@ void set_rotation(int16_t angle_category) {
     rot_right = (int16x4_t) {angles.cos_q15, angles.sin_q15, -angles.sin_q15, angles.cos_q15};
 }
 
+int32_t arctan(int32_t val) {
+    return 0;
+}
+
+void rotate(int32x2_t* M) {
+    int sum = (vget_lane_s32(M[1], 0) + vget_lane_s32(M[0], 1)) / (vget_lane_s32(M[1], 1) - vget_lane_s32(M[0], 0));
+    int dif = (vget_lane_s32(M[1], 0) - vget_lane_s32(M[0], 1)) / (vget_lane_s32(M[1], 1) + vget_lane_s32(M[0], 0));
+    sum = arctan(sum);
+    dif = arctan(dif);
+    int theta_r = (sum + dif) >> 2;
+    int theta_l = sum - theta_r;
+}
+
 void transpose_32x2x2(int32x4_t* M) {
     int32x2_t ah = vget_high_s32(M[0]);
     int32x2_t al = vget_low_s32(M[0]);
