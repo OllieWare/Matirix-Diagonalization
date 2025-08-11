@@ -25,19 +25,21 @@ int32x4_t vt_4 = {0,0,0,1};
 
 // Define fixed-point angle constants (Q15 format)
 #define ANGLE_0     0
+#define ANGLE_22    8192
 #define ANGLE_45    16384
-#define ANGLE_90    32768
+#define ANGLE_67    24576
+#define ANGLE_90    32767
 
 // Structure to hold sin and cos values
 typedef struct {
-    int16_t angle_deg;
-    int16_t sin_q15;
-    int16_t cos_q15;
+    int32_t angle_deg;
+    int32_t sin_q15;
+    int32_t cos_q15;
 } TrigPair;
 
 // Lookup table: angles around 0, 45, and 90 degrees
 TrigPair trig_table[] = {
-    { 0,    0,     32768 },     // sin(0°), cos(0°)
+    { 0,    0,     32767 },     // sin(0°), cos(0°)
     { 22,   12288, 30199 },     // sin(22°), cos(22°)
     { 45,   23170, 23170 },     // sin(45°), cos(45°)
     { 67,   30199, 12288 },     // sin(67°), cos(67°)
@@ -81,22 +83,40 @@ void set_rotation(int16_t angle_category) {
 }
 
 int32_t arctan(int32_t val) {
-    return 0;
+    if(abs(val)<=4096){return ANGLE_0;
+}else if(abs(val)<=8192){return ANGLE_22;
+}else if(abs(val)<=16384){return ANGLE_45;
+}else if(abs(val)<=24576){return ANGLE_67;
+}else {return ANGLE_90;//32767
+}
 }
 
 int32_t cos_t(int32_t theta) {
-    return 0;
+//printf("trig_table[0].cos_q15: %d \n",trig_table[0].cos_q15);
+//printf("trig_table[1].cos_q15: %d \n",trig_table[1].cos_q15);
+//printf("trig_table[2].cos_q15: %d \n",trig_table[2].cos_q15);
+    if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].cos_q15;
+}else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].cos_q15;
+}else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].cos_q15;
+}else {return trig_table[3].cos_q15;}
 }
 
 int32_t sin_t(int32_t theta) {
-    return 0;
+//printf("stheta: %d \n",theta);
+    if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].sin_q15;
+}else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].sin_q15;
+}else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].sin_q15;
+}else {return trig_table[3].sin_q15;}
 }
 
 void get_rotatation(int32x2_t* R, int32_t theta) {
-    vset_lane_32(cos_t(theta), R[0], 0);
-    vset_lane_32(-sin_t(theta), R[0], 1);
-    vset_lane_32(sin_t(theta), R[1], 0);
-    vset_lane_32(cos_t(theta), R[1], 1);
+//printf("cos_t(theta) %d", cos_t(theta));
+//printf("sin_t(theta) %d", sin_t(theta));
+   R[0]= vset_lane_s32(cos_t(theta), R[0], 0);
+   R[0]= vset_lane_s32(-sin_t(theta), R[0], 1);
+   R[1] = vset_lane_s32(sin_t(theta), R[1], 0);
+   R[1] = vset_lane_s32(cos_t(theta), R[1], 1);
+//printf("R11: %d \n", vget_lane_s32(R[1],1));
 }
 
 void transpose_32x2(int32x2_t* M) {
@@ -105,18 +125,69 @@ void transpose_32x2(int32x2_t* M) {
     M[0] = temp.val[0];
     M[1] = temp.val[1];
 }
+void matrix_multiply(int32x2_t* m1, int32x2_t* m2, int32x2_t* target){
+int32_t N00 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],0)) ;
 
+int32_t N01 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],1)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],1)) ;
+
+int32_t N10 = (vget_lane_s32 (m1[1],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[1],1) * vget_lane_s32 (m2[0],1));
+
+int32_t N11 = (vget_lane_s32 (m1[1],0) * vget_lane_s32 (m2[0],1)) +(vget_lane_s32 (m1[1],1) * vget_lane_s32 (m2[1],1));
+
+target[0]= vset_lane_s32(N00, target[0], 0);
+target [0] = vset_lane_s32(N01, target[0], 1);
+target [1]= vset_lane_s32(N10, target[1], 0);
+target [1]= vset_lane_s32(N11, target[1], 1);
+
+//printf("Target00: %.2d \n ", vget_lane_s32(target[0], 0));
+//printf("Target01: %.2d \n ", vget_lane_s32(target[0], 1));
+//printf("Target10: %.2d \n ", vget_lane_s32(target[1], 0));
+//printf("Target11: %.2d \n ", vget_lane_s32(target[1], 1));
+
+}
 void rotate(int32x2_t* M) {
-    int sum = (vget_lane_s32(M[1], 0) + vget_lane_s32(M[0], 1)) / (vget_lane_s32(M[1], 1) - vget_lane_s32(M[0], 0));
-    int dif = (vget_lane_s32(M[1], 0) - vget_lane_s32(M[0], 1)) / (vget_lane_s32(M[1], 1) + vget_lane_s32(M[0], 0));
+    int32_t a = vget_lane_s32(M[1], 0);
+    int32_t b = vget_lane_s32(M[0], 1);
+    int sum_denom = (vget_lane_s32(M[1], 1) - vget_lane_s32(M[0],0));
+    int dif_denom = (vget_lane_s32(M[1], 1) + vget_lane_s32(M[0],0));
+    int64_t numerator;
+    int sum;
+    if (sum_denom!=0){ 
+    numerator = (int64_t)(a + b) * 32768;
+    sum = (int32_t)(numerator / sum_denom);
+    }else{sum=32767;}
+    int dif;
+    if (dif_denom!=0){
+    numerator = (int64_t)(a - b) * 32768;
+    dif = (int32_t)(numerator / dif_denom);
+    }else{dif=32767;}
+    //printf("sum: %d \n",sum);
+    //printf("dif: %d \n",dif);
     sum = arctan(sum);
     dif = arctan(dif);
+    //printf("sum_tan: %d \n",sum);
+    //printf("dif_tan: %d \n",dif);
     int theta_r = (sum + dif) >> 2;
     int theta_l = sum - theta_r;
     int32x2_t R_L[2] = { {}, {} };
     int32x2_t R_R[2] = { {}, {} };
     get_rotatation(R_L, theta_l);
     get_rotatation(R_R, theta_r);
+    transpose_32x2(R_R);
+
+//Matrix Multiply R_L x M x R_R
+int32x2_t temp[2]={{},{}};
+matrix_multiply(R_L,M,temp);
+matrix_multiply(temp,R_R,M);
+//printf("M:%.2d \n ", vget_lane_s32(M[1], 1));
+printf("L00:%.2d \n ", vget_lane_s32(R_L[0], 0));
+printf("L01:%.2d \n ", vget_lane_s32(R_L[0], 1));
+printf("L10:%.2d \n ", vget_lane_s32(R_L[1], 0));
+printf("L11:%.2d \n ", vget_lane_s32(R_L[1], 1));
+printf("R00:%.2d \n ", vget_lane_s32(R_R[0], 0));
+printf("R01:%.2d \n ", vget_lane_s32(R_R[0], 1));
+printf("R10:%.2d \n ", vget_lane_s32(R_R[1], 0));
+printf("R11:%.2d \n ", vget_lane_s32(R_R[1], 1));
 }
 
 void transpose_32x4x4(int32x4_t* M) {
@@ -187,13 +258,17 @@ int main() {
     int32x4_t M[4] = {m_1, m_2, m_3, m_4};
     int i;
     int j;
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            printf("%.2d ", vgetq_lane_s32(M[i], j));
-        }
-        printf("\n");
+    for (i=0; i<4; i++){	
+    for (j = 0; j < 4; j++) {
+    switch (j){
+    case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
+    case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
+    case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
+    case 3:  printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
+    }
     }
     printf("\n");
+    }
     // int32x4x2_t temp;
     // temp = vtrnq_s32(M[0], M[1]);
     // M[0] = temp.val[0];
@@ -203,8 +278,13 @@ int main() {
     // M[3] = temp.val[1];
     // for (i = 0; i < 4; i++) {
     //     for (j = 0; j < 4; j++) {
-    //         printf("%.2d ", vgetq_lane_s32(M[i], j));
+	//	switch(j){
+    //         case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
+	  //     case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
+          //     case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
+          //     case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
     //     }
+	//   }
     //     printf("\n");
     // }
     // printf("\n");
@@ -227,7 +307,12 @@ int main() {
     transpose_32x4(M);
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            printf("%.2d ", vgetq_lane_s32(M[i], j));
+            switch(j){
+		case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
+		case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
+		case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
+		case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
+          }
         }
         printf("\n");
     }
@@ -240,5 +325,15 @@ int main() {
         set_rotation(cat);
         printf("Angle: %d, Sin: %d, Cos: %d\n", trig_table[cat].angle_deg, trig_table[cat].sin_q15, trig_table[cat].cos_q15);
     }
+    int32x2_t test_rotate[2] = {{1,2},{1,5}};
+    rotate(test_rotate);
+    for(i=0;i<2;i++){
+        for(j=0;j<2;j++){
+           switch(j){
+           case 0: printf("%.2d ", vget_lane_s32(test_rotate[i], 0)>>29); break;
+           case 1: printf("%.2d ", vget_lane_s32(test_rotate[i], 1)>>29); break;
+           }
+}printf("\n");
+} 
     return 0;
 }
