@@ -40,10 +40,29 @@ typedef struct {
 // Lookup table: angles around 0, 45, and 90 degrees
 TrigPair trig_table[] = {
     { 0,    0,     32767 },     // sin(0°), cos(0°)
-    { 22,   12288, 30199 },     // sin(22°), cos(22°)
-    { 45,   23170, 23170 },     // sin(45°), cos(45°)
-    { 67,   30199, 12288 },     // sin(67°), cos(67°)
-    { 90,   32768,     0 }      // sin(90°), cos(90°)
+    { 5,    2851,  32648 },     // sin(5°), cos(5°)
+    { 10,   5690,  32269 },     // sin(10°), cos(10°)
+    { 15,   8513,  31631 },     // sin(15°), cos(15°)
+    { 20,   11310, 30736 }      // sin(20°), cos(20°)
+	{ 25,   14066, 29586 }      // sin(25°), cos(25°)
+	{ 30,   16384, 28378 }      // sin(30°), cos(30°)
+	{ 35,   18725, 26915 }      // sin(35°), cos(35°)
+	{ 40,   21005, 25299 }      // sin(40°), cos(40°)
+	{ 45,   23170, 23170 }      // sin(45°), cos(45°)
+};
+
+// Arctan degrees incrementing by 5 degrees
+int32_t ARCTAN_VALS[10] = {
+	0,
+	2867,
+	5778,
+	8780,
+	11926,
+	15280,
+	18919,
+	22944,
+	27496,
+	32767,
 };
 
 int16x4_t rot_right;
@@ -83,30 +102,42 @@ void set_rotation(int16_t angle_category) {
 }
 
 int32_t arctan(int32_t val) {
-    if(abs(val)<=4096){return ANGLE_0;
-}else if(abs(val)<=8192){return ANGLE_22;
-}else if(abs(val)<=16384){return ANGLE_45;
-}else if(abs(val)<=24576){return ANGLE_67;
-}else {return ANGLE_90;//32767
-}
+	int i;
+	if (abs(val) > 32767) {
+		val = 65534 - val;
+	}
+	for (i = 0; i < 10; ++i) {
+		if (abs(val) <= ARCTAN_VALS[i]) {
+			return i;
+		}
+	}
+	return -1;
+//     if(abs(val)<=4096){return ANGLE_0;
+// }else if(abs(val)<=8192){return ANGLE_22;
+// }else if(abs(val)<=16384){return ANGLE_45;
+// }else if(abs(val)<=24576){return ANGLE_67;
+// }else {return ANGLE_90;//32767
+//}
 }
 
 int32_t cos_t(int32_t theta) {
 //printf("trig_table[0].cos_q15: %d \n",trig_table[0].cos_q15);
 //printf("trig_table[1].cos_q15: %d \n",trig_table[1].cos_q15);
-//printf("trig_table[2].cos_q15: %d \n",trig_table[2].cos_q15);
-    if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].cos_q15;
-}else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].cos_q15;
-}else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].cos_q15;
-}else {return trig_table[3].cos_q15;}
+//printf("trig_table[2].cos_q15: %d \n",trig_table[2].cos_q15);	
+return trig_table[theta].cos_q15;
+//     if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].cos_q15;
+// }else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].cos_q15;
+// }else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].cos_q15;
+// }else {return trig_table[3].cos_q15;}
 }
 
 int32_t sin_t(int32_t theta) {
 //printf("stheta: %d \n",theta);
-    if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].sin_q15;
-}else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].sin_q15;
-}else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].sin_q15;
-}else {return trig_table[3].sin_q15;}
+return trig_table[theta].sin_q15;
+//     if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].sin_q15;
+// }else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].sin_q15;
+// }else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].sin_q15;
+// }else {return trig_table[3].sin_q15;}
 }
 
 void get_rotatation(int32x2_t* R, int32_t theta) {
