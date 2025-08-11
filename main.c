@@ -158,13 +158,13 @@ void rotate(int32x2_t* M) {
     int64_t numerator;
     int sum;
     if (sum_denom!=0){ 
-    numerator = (int64_t)(a + b) * 32768;
-    sum = (int32_t)(numerator / sum_denom);
+    numerator = ((int64_t)(a + b) << 15);
+    sum = (int32_t)((numerator + (sum_denom >> 1)) / sum_denom);
     }else{sum=32767;}
     int dif;
     if (dif_denom!=0){
-    numerator = (int64_t)(a - b) * 32768;
-    dif = (int32_t)(numerator / dif_denom);
+    numerator = ((int64_t)(a - b) << 15);
+    dif = (int32_t)((numerator + (dif_denom >> 1)) /dif_denom);
     }else{dif=32767;}
     //printf("sum: %d \n",sum);
     //printf("dif: %d \n",dif);
