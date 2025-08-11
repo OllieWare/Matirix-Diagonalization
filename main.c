@@ -43,11 +43,11 @@ TrigPair trig_table[] = {
     { 5,    2851,  32648 },     // sin(5°), cos(5°)
     { 10,   5690,  32269 },     // sin(10°), cos(10°)
     { 15,   8513,  31631 },     // sin(15°), cos(15°)
-    { 20,   11310, 30736 }      // sin(20°), cos(20°)
-	{ 25,   14066, 29586 }      // sin(25°), cos(25°)
-	{ 30,   16384, 28378 }      // sin(30°), cos(30°)
-	{ 35,   18725, 26915 }      // sin(35°), cos(35°)
-	{ 40,   21005, 25299 }      // sin(40°), cos(40°)
+    { 20,   11310, 30736 },      // sin(20°), cos(20°)
+	{ 25,   14066, 29586 },      // sin(25°), cos(25°)
+	{ 30,   16384, 28378 },      // sin(30°), cos(30°)
+	{ 35,   18725, 26915 },      // sin(35°), cos(35°)
+	{ 40,   21005, 25299 },      // sin(40°), cos(40°)
 	{ 45,   23170, 23170 }      // sin(45°), cos(45°)
 };
 
@@ -101,10 +101,12 @@ void set_rotation(int16_t angle_category) {
     rot_right = (int16x4_t) {angles.cos_q15, angles.sin_q15, -angles.sin_q15, angles.cos_q15};
 }
 
-int32_t arctan(int32_t val) {
+int32_t arctan(int32_t val,  int* flag) {
 	int i;
+        *flag=0;
 	if (abs(val) > 32767) {
 		val = 65534 - val;
+		*flag=1; // to show 90-Theta needed
 	}
 	for (i = 0; i < 10; ++i) {
 		if (abs(val) <= ARCTAN_VALS[i]) {
@@ -140,13 +142,20 @@ return trig_table[theta].sin_q15;
 // }else {return trig_table[3].sin_q15;}
 }
 
-void get_rotatation(int32x2_t* R, int32_t theta) {
+void get_rotatation(int32x2_t* R, int32_t theta, int flag) {
 //printf("cos_t(theta) %d", cos_t(theta));
 //printf("sin_t(theta) %d", sin_t(theta));
+if (flag==0){
    R[0]= vset_lane_s32(cos_t(theta), R[0], 0);
    R[0]= vset_lane_s32(-sin_t(theta), R[0], 1);
    R[1] = vset_lane_s32(sin_t(theta), R[1], 0);
    R[1] = vset_lane_s32(cos_t(theta), R[1], 1);
+} else{
+R[0]= vset_lane_s32(sin_t(theta), R[0], 0);
+R[0]= vset_lane_s32(-cos_t(theta), R[0], 1);
+R[1] = vset_lane_s32(cos_t(theta), R[1], 0);
+R[1] = vset_lane_s32(sin_t(theta), R[1], 1);
+}
 //printf("R11: %d \n", vget_lane_s32(R[1],1));
 }
 
@@ -199,18 +208,23 @@ void rotate(int32x2_t* M) {
     }else{dif=32767;}
     //printf("sum: %d \n",sum);
     //printf("dif: %d \n",dif);
-    sum = arctan(sum) * 5;
-    dif = arctan(dif) * 5;
+
+    int sum_mirror;
+    int dif_mirror;
+    sum = arctan(sum,&sum_mirror) * 5;
+    dif = arctan(dif,&dif_mirror) * 5;
     //printf("sum_tan: %d \n",sum);
     //printf("dif_tan: %d \n",dif);
     int theta_r = (sum + dif) >> 2;
+    printf("R_Angle %d \n",theta_r);
     int theta_l = sum - theta_r;
+    printf("L_Angle %d \n",theta_l);
 	theta_r = theta_r / 5;
 	theta_l = theta_l / 5;
     int32x2_t R_L[2] = { {}, {} };
     int32x2_t R_R[2] = { {}, {} };
-    get_rotatation(R_L, theta_l);
-    get_rotatation(R_R, theta_r);
+    get_rotatation(R_L, theta_l, sum_mirror);
+    get_rotatation(R_R, theta_r, sum_mirror);
     transpose_32x2(R_R);
 
 //Matrix Multiply R_L x M x R_R
