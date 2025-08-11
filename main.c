@@ -126,18 +126,23 @@ void transpose_32x2(int32x2_t* M) {
     M[1] = temp.val[1];
 }
 void matrix_multiply(int32x2_t* m1, int32x2_t* m2, int32x2_t* target){
-int32_t N00 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],0)) ;
+int64_t N00 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],0)) ;
 
-int32_t N01 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],1)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],1)) ;
+int64_t N01 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],1)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],1)) ;
 
-int32_t N10 = (vget_lane_s32 (m1[1],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[1],1) * vget_lane_s32 (m2[0],1));
+int64_t N10 = (vget_lane_s32 (m1[1],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[1],1) * vget_lane_s32 (m2[0],1));
 
-int32_t N11 = (vget_lane_s32 (m1[1],0) * vget_lane_s32 (m2[0],1)) +(vget_lane_s32 (m1[1],1) * vget_lane_s32 (m2[1],1));
+int64_t N11 = (vget_lane_s32 (m1[1],0) * vget_lane_s32 (m2[0],1)) +(vget_lane_s32 (m1[1],1) * vget_lane_s32 (m2[1],1));
 
-target[0]= vset_lane_s32(N00, target[0], 0);
-target [0] = vset_lane_s32(N01, target[0], 1);
-target [1]= vset_lane_s32(N10, target[1], 0);
-target [1]= vset_lane_s32(N11, target[1], 1);
+N00 = (N00 + (1<<14)) >> 15;
+N01 = (N01 + (1<<14)) >> 15;
+N10 = (N10 + (1<<14)) >> 15;
+N11 = (N11 + (1<<14)) >> 15;
+	
+target[0]= vset_lane_s32((int32_t) N00, target[0], 0);
+target [0] = vset_lane_s32((int32_t) N01, target[0], 1);
+target [1]= vset_lane_s32((int32_t) N10, target[1], 0);
+target [1]= vset_lane_s32((int32_t) N11, target[1], 1);
 
 //printf("Target00: %.2d \n ", vget_lane_s32(target[0], 0));
 //printf("Target01: %.2d \n ", vget_lane_s32(target[0], 1));
@@ -330,8 +335,8 @@ int main() {
     for(i=0;i<2;i++){
         for(j=0;j<2;j++){
            switch(j){
-           case 0: printf("%.2d ", vget_lane_s32(test_rotate[i], 0)>>29); break;
-           case 1: printf("%.2d ", vget_lane_s32(test_rotate[i], 1)>>29); break;
+           case 0: printf("%.2d ", vget_lane_s32(test_rotate[i], 0)); break;
+           case 1: printf("%.2d ", vget_lane_s32(test_rotate[i], 1)); break;
            }
 }printf("\n");
 } 
