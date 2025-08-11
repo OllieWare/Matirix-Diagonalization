@@ -199,12 +199,14 @@ void rotate(int32x2_t* M) {
     }else{dif=32767;}
     //printf("sum: %d \n",sum);
     //printf("dif: %d \n",dif);
-    sum = arctan(sum);
-    dif = arctan(dif);
+    sum = arctan(sum) * 5;
+    dif = arctan(dif) * 5;
     //printf("sum_tan: %d \n",sum);
     //printf("dif_tan: %d \n",dif);
     int theta_r = (sum + dif) >> 2;
     int theta_l = sum - theta_r;
+	theta_r = theta_r / 5;
+	theta_l = theta_l / 5;
     int32x2_t R_L[2] = { {}, {} };
     int32x2_t R_R[2] = { {}, {} };
     get_rotatation(R_L, theta_l);
