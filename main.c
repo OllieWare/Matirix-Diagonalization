@@ -185,14 +185,14 @@ int32x2_t temp[2]={{},{}};
 matrix_multiply(R_L,M,temp);
 matrix_multiply(temp,R_R,M);
 //printf("M:%.2d \n ", vget_lane_s32(M[1], 1));
-printf("L00:%.2d \n ", vget_lane_s32(R_L[0], 0));
-printf("L01:%.2d \n ", vget_lane_s32(R_L[0], 1));
-printf("L10:%.2d \n ", vget_lane_s32(R_L[1], 0));
-printf("L11:%.2d \n ", vget_lane_s32(R_L[1], 1));
-printf("R00:%.2d \n ", vget_lane_s32(R_R[0], 0));
-printf("R01:%.2d \n ", vget_lane_s32(R_R[0], 1));
-printf("R10:%.2d \n ", vget_lane_s32(R_R[1], 0));
-printf("R11:%.2d \n ", vget_lane_s32(R_R[1], 1));
+//printf("L00:%.2d \n ", vget_lane_s32(R_L[0], 0));
+//printf("L01:%.2d \n ", vget_lane_s32(R_L[0], 1));
+//printf("L10:%.2d \n ", vget_lane_s32(R_L[1], 0));
+//printf("L11:%.2d \n ", vget_lane_s32(R_L[1], 1));
+//printf("R00:%.2d \n ", vget_lane_s32(R_R[0], 0));
+//printf("R01:%.2d \n ", vget_lane_s32(R_R[0], 1));
+//printf("R10:%.2d \n ", vget_lane_s32(R_R[1], 0));
+//printf("R11:%.2d \n ", vget_lane_s32(R_R[1], 1));
 }
 
 void transpose_32x4x4(int32x4_t* M) {
@@ -266,10 +266,10 @@ int main() {
     for (i=0; i<4; i++){	
     for (j = 0; j < 4; j++) {
     switch (j){
-    case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
-    case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
-    case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
-    case 3:  printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
+    //case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
+    //case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
+    //case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
+    //case 3:  printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
     }
     }
     printf("\n");
@@ -313,10 +313,10 @@ int main() {
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
             switch(j){
-		case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
-		case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
-		case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
-		case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
+	//	case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
+	//	case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
+	//	case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
+	//	case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
           }
         }
         printf("\n");
@@ -326,12 +326,15 @@ int main() {
     int16_t test_angles[] = {1000, 14000, 16000, 30000};
     for (i = 0; i < 4; i++) {
         AngleCategory cat = categorize_angle(test_angles[i]);
-        printf("Angle %d categorized as %d\n", test_angles[i], cat);
+        //printf("Angle %d categorized as %d\n", test_angles[i], cat);
         set_rotation(cat);
-        printf("Angle: %d, Sin: %d, Cos: %d\n", trig_table[cat].angle_deg, trig_table[cat].sin_q15, trig_table[cat].cos_q15);
+        //printf("Angle: %d, Sin: %d, Cos: %d\n", trig_table[cat].angle_deg, trig_table[cat].sin_q15, trig_table[cat].cos_q15);
     }
-    int32x2_t test_rotate[2] = {{1,2},{1,5}};
+    int32x2_t test_rotate[2] = {{100,200},{100,500}};
+    int k;
+    for(k=0; k<5; k++){
     rotate(test_rotate);
+    printf("Rotation %d: \n",k+1);
     for(i=0;i<2;i++){
         for(j=0;j<2;j++){
            switch(j){
@@ -339,6 +342,7 @@ int main() {
            case 1: printf("%.2d ", vget_lane_s32(test_rotate[i], 1)); break;
            }
 }printf("\n");
+}
 } 
     return 0;
 }
