@@ -165,6 +165,17 @@ void transpose_32x2(int32x2_t* M) {
     M[0] = temp.val[0];
     M[1] = temp.val[1];
 }
+
+int32_t saturate_q15(int64_t val) {
+    if (val > 32767) return 32767;
+    if (val < -32768) return -32768;
+    return (int32_t)val;
+} 
+
+
+
+
+
 void matrix_multiply(int32x2_t* m1, int32x2_t* m2, int32x2_t* target){
 int64_t N00 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],0)) ;
 
@@ -178,11 +189,15 @@ N00 = (N00 + (1<<14)) >> 15;
 N01 = (N01 + (1<<14)) >> 15;
 N10 = (N10 + (1<<14)) >> 15;
 N11 = (N11 + (1<<14)) >> 15;
-	
-target[0]= vset_lane_s32((int32_t) N00, target[0], 0);
-target [0] = vset_lane_s32((int32_t) N01, target[0], 1);
-target [1]= vset_lane_s32((int32_t) N10, target[1], 0);
-target [1]= vset_lane_s32((int32_t) N11, target[1], 1);
+
+int32_t N00_safe = saturate_q15(N00);	
+int32_t N01_safe = saturate_q15(N01);
+int32_t N10_safe = saturate_q15(N10);
+int32_t N11_safe = saturate_q15(N11);
+target[0]= vset_lane_s32((int32_t) N00_safe, target[0], 0);
+target [0] = vset_lane_s32((int32_t) N01_safe, target[0], 1);
+target [1]= vset_lane_s32((int32_t) N10_safe, target[1], 0);
+target [1]= vset_lane_s32((int32_t) N11_safe, target[1], 1);
 
 //printf("Target00: %.2d \n ", vget_lane_s32(target[0], 0));
 //printf("Target01: %.2d \n ", vget_lane_s32(target[0], 1));
@@ -213,6 +228,8 @@ void rotate(int32x2_t* M) {
     int dif_mirror;
     sum = arctan(sum,&sum_mirror) * 5;
     dif = arctan(dif,&dif_mirror) * 5;
+    int mirror_L=sum_mirror;
+    int mirror_R=(sum_mirror+dif_mirror);
     //printf("sum_tan: %d \n",sum);
     //printf("dif_tan: %d \n",dif);
     int theta_r = (sum + dif) >> 2;
@@ -221,10 +238,14 @@ void rotate(int32x2_t* M) {
     printf("L_Angle %d \n",theta_l);
 	theta_r = theta_r / 5;
 	theta_l = theta_l / 5;
+    if(theta_r<=0){theta_r=1;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
+    if(theta_l<=0){theta_l=1; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
+    printf("R_Index %d \n",theta_r);
+    printf("L_Index %d \n",theta_l);
     int32x2_t R_L[2] = { {}, {} };
     int32x2_t R_R[2] = { {}, {} };
-    get_rotatation(R_L, theta_l, sum_mirror);
-    get_rotatation(R_R, theta_r, sum_mirror);
+    get_rotatation(R_L, theta_l, 0);
+    get_rotatation(R_R, theta_r, 0);
     transpose_32x2(R_R);
 
 //Matrix Multiply R_L x M x R_R
@@ -377,7 +398,7 @@ int main() {
         set_rotation(cat);
         //printf("Angle: %d, Sin: %d, Cos: %d\n", trig_table[cat].angle_deg, trig_table[cat].sin_q15, trig_table[cat].cos_q15);
     }
-    int32x2_t test_rotate[2] = {{100,200},{100,500}};
+    int32x2_t test_rotate[2] = {{0,32767},{-32767,0}};
     int k;
     for(k=0; k<5; k++){
     rotate(test_rotate);
