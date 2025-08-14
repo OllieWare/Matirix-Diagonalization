@@ -114,32 +114,14 @@ int32_t arctan(int32_t val,  int* flag) {
 		}
 	}
 	return -1;
-//     if(abs(val)<=4096){return ANGLE_0;
-// }else if(abs(val)<=8192){return ANGLE_22;
-// }else if(abs(val)<=16384){return ANGLE_45;
-// }else if(abs(val)<=24576){return ANGLE_67;
-// }else {return ANGLE_90;//32767
-//}
 }
 
 int32_t cos_t(int32_t theta) {
-//printf("trig_table[0].cos_q15: %d \n",trig_table[0].cos_q15);
-//printf("trig_table[1].cos_q15: %d \n",trig_table[1].cos_q15);
-//printf("trig_table[2].cos_q15: %d \n",trig_table[2].cos_q15);	
-return trig_table[theta].cos_q15;
-//     if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].cos_q15;
-// }else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].cos_q15;
-// }else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].cos_q15;
-// }else {return trig_table[3].cos_q15;}
+	return trig_table[theta].cos_q15;
 }
 
 int32_t sin_t(int32_t theta) {
-//printf("stheta: %d \n",theta);
-return trig_table[theta].sin_q15;
-//     if(theta>=ANGLE_0 && theta<ANGLE_22){return trig_table[0].sin_q15;
-// }else if(theta>=ANGLE_22 && theta<ANGLE_45){return trig_table[1].sin_q15;
-// }else if(theta>=ANGLE_45 && theta<ANGLE_67){return trig_table[2].sin_q15;
-// }else {return trig_table[3].sin_q15;}
+	return trig_table[theta].sin_q15;
 }
 
 void get_rotatation(int32x2_t* R, int32_t theta, int flag) {
@@ -290,31 +272,8 @@ void transpose_32x2x2(int32x4_t* M) {
 }
 
 void transpose_32x4(int32x4_t* M) {
-    // int32x4x2_t temp;
-    // temp = vtrnq_s32(M[0], M[1]);
-    // M[0] = temp.val[0];
-    // M[1] = temp.val[1];
     transpose_32x2x2(M);
-    // temp = vtrnq_s32(M[2], M[3]);
-    // M[2] = temp.val[0];
-    // M[3] = temp.val[1];
-    transpose_32x2x2(M+2);
-    // int32x2_t ah = vget_high_s32(M[0]);
-    // int32x2_t al = vget_low_s32(M[0]);
-    // int32x2_t bh = vget_high_s32(M[1]);
-    // int32x2_t bl = vget_low_s32(M[1]);
-    // int32x2_t ch = vget_high_s32(M[2]);
-    // int32x2_t cl = vget_low_s32(M[2]);
-    // int32x2_t dh = vget_high_s32(M[3]);
-    // int32x2_t dl = vget_low_s32(M[3]);
-    // int32x4_t aa = vcombine_s32(al, cl);
-    // int32x4_t bb = vcombine_s32(bl, dl);
-    // int32x4_t cc = vcombine_s32(ah, ch);
-    // int32x4_t dd = vcombine_s32(bh, dh);
-    // M[0] = aa;
-    // M[1] = bb;
-    // M[2] = cc;
-    // M[3] = dd;
+    transpose_32x2x2(M+2); 
     transpose_32x4x4(M);
 }
 
