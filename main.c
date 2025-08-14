@@ -156,20 +156,20 @@ int32_t saturate_q15(int64_t val) {
 
 int32_t get_lane(int32x4_t vec, int index) {
     switch (index) {
-        case 0: return vget_lane_s32(vec, 0);
-        case 1: return vget_lane_s32(vec, 1);
-        case 2: return vget_lane_s32(vec, 2);
-        case 3: return vget_lane_s32(vec, 3);
+        case 0: return vgetq_lane_s32(vec, 0);
+        case 1: return vgetq_lane_s32(vec, 1);
+        case 2: return vgetq_lane_s32(vec, 2);
+        case 3: return vgetq_lane_s32(vec, 3);
         default: return 0; // Should never happen
     }
 }
 
 int32x4_t set_lane(int32x4_t vec, int32_t value, int index) {
     switch (index) {
-        case 0: return vset_lane_s32(value, vec, 0);
-        case 1: return vset_lane_s32(value, vec, 1);
-        case 2: return vset_lane_s32(value, vec, 2);
-        case 3: return vset_lane_s32(value, vec, 3);
+        case 0: return vsetq_lane_s32(value, vec, 0);
+        case 1: return vsetq_lane_s32(value, vec, 1);
+        case 2: return vsetq_lane_s32(value, vec, 2);
+        case 3: return vsetq_lane_s32(value, vec, 3);
         default: return vec; // Should never happen
     }
 }
