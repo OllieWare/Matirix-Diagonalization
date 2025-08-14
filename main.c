@@ -197,12 +197,12 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
                     case 2: b = vgetq_lane_s32(m2[k], 2); break;
                     case 3: b = vgetq_lane_s32(m2[k], 3); break;
                 }
-				printf("A is: %.2d\n", a);
-				printf("B is: %.2d\n", b);
-				printf("\n");
+				//printf("A is: %.2d\n", a);
+				//printf("B is: %.2d\n", b);
+				//printf("\n");
                 sum += (int64_t)a * b;
-				printf("Sum is: %.2d\n", sum);
-				printf("\n");
+				//printf("Sum is: %.2d\n", sum);
+				//printf("\n");
             }
 
             // Fixed-point rounding
@@ -572,6 +572,19 @@ int main() {
 			printf("\n");
 			int32x4_t M_prime[4] = {{}, {}, {}, {}};
 			transpose_32x4x4(VT);
+			printf("Matrix VT after transpose:\n");
+			for(k=0;k<4;k++){
+        		for(l=0;l<4;l++) {
+           			switch(l) {
+           				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
+           			}
+				}
+				printf("\n");
+			}
+			printf("\n");
 			matrix_multiply_4x4(VT_prime, VT, VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
