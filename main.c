@@ -339,7 +339,17 @@ int main() {
 					temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
 					break;
     		}
-			rotate(temp);
+			for(i=0;i<2;i++){
+        		for(j=0;j<2;j++) {
+           			switch(j) {
+           				case 0: printf("%.2d ", vget_lane_s32(temp[i], 0)); break;
+           				case 1: printf("%.2d ", vget_lane_s32(temp[i], 1)); break;
+           			}
+				}
+				printf("\n");
+			}
+			printf("\n");
+			//rotate(temp);
     	}
     	printf("\n");
     }
