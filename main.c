@@ -412,10 +412,10 @@ int main() {
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 0);
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 1);
 							
-						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 0);
-							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 1);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 0);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 1);
+						    VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_prime[i], 0);
+							VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_prime[i], 1);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_prime[j], 0);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 1);
 							break;
 						case 2:
 						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 0);
@@ -423,10 +423,10 @@ int main() {
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 0);
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 2);
 							
-						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 0);
-							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 2);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 0);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 2);
+						    VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_prime[i], 0);
+							VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_prime[i], 2);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_prime[j], 0);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 2);
 							break;
 						case 3:
 						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 0);
@@ -434,10 +434,10 @@ int main() {
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 0);
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 3);
 							
-						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 0);
-							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 3);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 0);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 3);
+						    VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_prime[i], 0);
+							VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_prime[i], 3);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_prime[j], 0);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 3);
 							break;
 					}
 					break;
@@ -449,10 +449,10 @@ int main() {
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 1);
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 2);
 							
-						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 1);
-							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 2);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 1);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 2);
+						    VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_prime[i], 1);
+							VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_prime[i], 2);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_prime[j], 1);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 2);
 							break;
 						case 3:
 						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 1);
@@ -460,10 +460,10 @@ int main() {
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 1);
 							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 3);
 							
-						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 1);
-							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 3);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 1);
-							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 3);
+						    VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_prime[i], 1);
+							VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_prime[i], 3);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_prime[j], 1);
+							VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 3);
 							break;
 					}
 					break;
@@ -473,10 +473,10 @@ int main() {
 					U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 2);
 					U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 3);
 					
-					VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 2);
-					VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 3);
-					VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 2);
-					VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 3);
+					VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_prime[i], 2);
+					VT_prime[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_prime[i], 3);
+					VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_prime[j], 2);
+					VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 3);
 					break;
 			}
 			printf("Matrix U_prime:\n");
@@ -496,10 +496,10 @@ int main() {
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
            			switch(l) {
-           				case 0: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 0)); break;
-           				case 1: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 1)); break;
-						case 2: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 2)); break;
-           				case 3: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 3)); break;
+           				case 0: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 3)); break;
            			}
 				}
 				printf("\n");
