@@ -182,6 +182,9 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
             for (int k = 0; k < 4; k++) {
                 int32_t a = get_lane(m1[i], k); // m1[i][k]
                 int32_t b = get_lane(m2[k], j); // m2[k][j]
+				printf("A is: %.2d\n", a);
+				printf("B is: %.2d\n", b);
+				printf("\n");
                 sum += (int64_t)a * b;
             }
 
