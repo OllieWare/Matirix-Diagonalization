@@ -180,24 +180,44 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
         for (int j = 0; j < 4; j++) { // Column of m2
             int64_t sum = 0;
             for (int k = 0; k < 4; k++) {
-                int32_t a = get_lane(m1[i], k); // m1[i][k]
-                int32_t b = get_lane(m2[k], j); // m2[k][j]
+                int32_t a, b;
+
+                // Get m1[i][k]
+                switch (k) {
+                    case 0: a = vget_lane_s32(m1[i], 0); break;
+                    case 1: a = vget_lane_s32(m1[i], 1); break;
+                    case 2: a = vget_lane_s32(m1[i], 2); break;
+                    case 3: a = vget_lane_s32(m1[i], 3); break;
+                }
+
+                // Get m2[k][j]
+                switch (j) {
+                    case 0: b = vget_lane_s32(m2[k], 0); break;
+                    case 1: b = vget_lane_s32(m2[k], 1); break;
+                    case 2: b = vget_lane_s32(m2[k], 2); break;
+                    case 3: b = vget_lane_s32(m2[k], 3); break;
+                }
 				printf("A is: %.2d\n", a);
 				printf("B is: %.2d\n", b);
 				printf("\n");
                 sum += (int64_t)a * b;
+				printf("Sum is: %.2d\n", sum);
+				printf("\n");
             }
 
             // Fixed-point rounding
             sum = (sum + (1 << 14)) >> 15;
 
-			printf("Sum is: %.2d\n", sum);
-
             // Saturate to Q15
             int32_t safe = saturate_q15(sum);
 
-            // Set result in row_result[j]
-            row_result = set_lane(row_result, safe, j);
+            // Set row_result[j]
+            switch (j) {
+                case 0: row_result = vset_lane_s32(safe, row_result, 0); break;
+                case 1: row_result = vset_lane_s32(safe, row_result, 1); break;
+                case 2: row_result = vset_lane_s32(safe, row_result, 2); break;
+                case 3: row_result = vset_lane_s32(safe, row_result, 3); break;
+            }
         }
         target[i] = row_result;
     }
@@ -551,8 +571,8 @@ int main() {
 			}
 			printf("\n");
 			int32x4_t M_prime[4] = {{}, {}, {}, {}};
-			transpose_32x4x4(&VT);
-			matrix_multiply_4x4(&VT_prime, &VT, &VT);
+			transpose_32x4x4(VT);
+			matrix_multiply_4x4(VT_prime, VT, VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
@@ -566,11 +586,11 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
-			matrix_multiply_4x4(&U_prime, &M, &M_prime);
-			transpose_32x4x4(&VT_prime);
-			matrix_multiply_4x4(&M_prime, &VT_prime, &M);
-			transpose_32x4x4(&U_prime);
-			matrix_multiply_4x4(&U, &U_prime, &U);
+			matrix_multiply_4x4(U_prime, M, M_prime);
+			transpose_32x4x4(VT_prime);
+			matrix_multiply_4x4(M_prime, VT_prime, M);
+			transpose_32x4x4(U_prime);
+			matrix_multiply_4x4(U, U_prime, U);
     	}
     	printf("\n");
     }
