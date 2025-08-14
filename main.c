@@ -174,12 +174,6 @@ int32x4_t set_lane(int32x4_t vec, int32_t value, int index) {
     }
 }
 
-int32_t saturate_q15(int64_t value) {
-    if (value > 32767) return 32767;
-    if (value < -32768) return -32768;
-    return (int32_t)value;
-}
-
 void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
     for (int i = 0; i < 4; i++) { // Row of m1
         int32x4_t row_result = vdupq_n_s32(0); // Initialize result row
