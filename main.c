@@ -188,6 +188,8 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
             // Fixed-point rounding
             sum = (sum + (1 << 14)) >> 15;
 
+			printf("Sum is: %.2d\n", sum);
+
             // Saturate to Q15
             int32_t safe = saturate_q15(sum);
 
