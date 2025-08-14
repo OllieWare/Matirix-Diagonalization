@@ -184,18 +184,18 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
 
                 // Get m1[i][k]
                 switch (k) {
-                    case 0: a = vget_lane_s32(m1[i], 0); break;
-                    case 1: a = vget_lane_s32(m1[i], 1); break;
-                    case 2: a = vget_lane_s32(m1[i], 2); break;
-                    case 3: a = vget_lane_s32(m1[i], 3); break;
+                    case 0: a = vgetq_lane_s32(m1[i], 0); break;
+                    case 1: a = vgetq_lane_s32(m1[i], 1); break;
+                    case 2: a = vgetq_lane_s32(m1[i], 2); break;
+                    case 3: a = vgetq_lane_s32(m1[i], 3); break;
                 }
 
                 // Get m2[k][j]
                 switch (j) {
-                    case 0: b = vget_lane_s32(m2[k], 0); break;
-                    case 1: b = vget_lane_s32(m2[k], 1); break;
-                    case 2: b = vget_lane_s32(m2[k], 2); break;
-                    case 3: b = vget_lane_s32(m2[k], 3); break;
+                    case 0: b = vgetq_lane_s32(m2[k], 0); break;
+                    case 1: b = vgetq_lane_s32(m2[k], 1); break;
+                    case 2: b = vgetq_lane_s32(m2[k], 2); break;
+                    case 3: b = vgetq_lane_s32(m2[k], 3); break;
                 }
 				printf("A is: %.2d\n", a);
 				printf("B is: %.2d\n", b);
@@ -213,10 +213,10 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
 
             // Set row_result[j]
             switch (j) {
-                case 0: row_result = vset_lane_s32(safe, row_result, 0); break;
-                case 1: row_result = vset_lane_s32(safe, row_result, 1); break;
-                case 2: row_result = vset_lane_s32(safe, row_result, 2); break;
-                case 3: row_result = vset_lane_s32(safe, row_result, 3); break;
+                case 0: row_result = vsetq_lane_s32(safe, row_result, 0); break;
+                case 1: row_result = vsetq_lane_s32(safe, row_result, 1); break;
+                case 2: row_result = vsetq_lane_s32(safe, row_result, 2); break;
+                case 3: row_result = vsetq_lane_s32(safe, row_result, 3); break;
             }
         }
         target[i] = row_result;
