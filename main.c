@@ -6,10 +6,10 @@
 
 FILE* f;
 // Matrix M
-int32x4_t m_1 = {0,0,0,0};
-int32x4_t m_2 = {0,0,0,0};
-int32x4_t m_3 = {0,0,0,0};
-int32x4_t m_4 = {0,0,0,0};
+int32x4_t m_1 = {1,2,3,4};
+int32x4_t m_2 = {5,6,7,8};
+int32x4_t m_3 = {9,10,11,12};
+int32x4_t m_4 = {13,14,15,16};
 
 // Matrix U
 int32x4_t u_1 = {1,0,0,0};
@@ -332,85 +332,45 @@ int main() {
     int i;
     int j;
     for (i=0; i<4; i++){	
-    for (j = 0; j < 4; j++) {
-    switch (j){
+    	for (j = 0; j < 4; j++) {
+    		switch (j){
     //case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
     //case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
     //case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
     //case 3:  printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
+    		}
+    	}
+    	printf("\n");
     }
-    }
-    printf("\n");
-    }
-    // int32x4x2_t temp;
-    // temp = vtrnq_s32(M[0], M[1]);
-    // M[0] = temp.val[0];
-    // M[1] = temp.val[1];
-    // temp = vtrnq_s32(M[2], M[3]);
-    // M[2] = temp.val[0];
-    // M[3] = temp.val[1];
-    // for (i = 0; i < 4; i++) {
-    //     for (j = 0; j < 4; j++) {
-	//	switch(j){
-    //         case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
-	  //     case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
-          //     case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
-          //     case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
-    //     }
-	//   }
-    //     printf("\n");
-    // }
-    // printf("\n");
-    // int32x2_t ah = vget_high_s32(M[0]);
-    // int32x2_t al = vget_low_s32(M[0]);
-    // int32x2_t bh = vget_high_s32(M[1]);
-    // int32x2_t bl = vget_low_s32(M[1]);
-    // int32x2_t ch = vget_high_s32(M[2]);
-    // int32x2_t cl = vget_low_s32(M[2]);
-    // int32x2_t dh = vget_high_s32(M[3]);
-    // int32x2_t dl = vget_low_s32(M[3]);
-    // int32x4_t aa = vcombine_s32(al, cl);
-    // int32x4_t bb = vcombine_s32(bl, dl);
-    // int32x4_t cc = vcombine_s32(ah, ch);
-    // int32x4_t dd = vcombine_s32(bh, dh);
-    // M[0] = aa;
-    // M[1] = bb;
-    // M[2] = cc;
-    // M[3] = dd;
     transpose_32x4(M);
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            switch(j){
+            switch(j) {
 	//	case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
 	//	case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
 	//	case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
 	//	case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
-          }
+          	}
         }
         printf("\n");
     }
     printf("\n");
 
-    int16_t test_angles[] = {1000, 14000, 16000, 30000};
-    for (i = 0; i < 4; i++) {
-        AngleCategory cat = categorize_angle(test_angles[i]);
-        //printf("Angle %d categorized as %d\n", test_angles[i], cat);
-        set_rotation(cat);
-        //printf("Angle: %d, Sin: %d, Cos: %d\n", trig_table[cat].angle_deg, trig_table[cat].sin_q15, trig_table[cat].cos_q15);
-    }
-    int32x2_t test_rotate[2] = {{0,32767},{-32767,0}};
-    int k;
-    for(k=0; k<5; k++){
-    rotate(test_rotate);
-    printf("Rotation %d: \n",k+1);
-    for(i=0;i<2;i++){
-        for(j=0;j<2;j++){
-           switch(j){
-           case 0: printf("%.2d ", vget_lane_s32(test_rotate[i], 0)); break;
-           case 1: printf("%.2d ", vget_lane_s32(test_rotate[i], 1)); break;
-           }
-}printf("\n");
-}
-} 
+// 		2x2 Matrix Test
+	// ------------------
+ //    int32x2_t test_rotate[2] = {{0,32767},{-32767,0}};
+ //    int k;
+ //    for(k=0; k<5; k++){
+ //    rotate(test_rotate);
+ //    printf("Rotation %d: \n",k+1);
+ //    for(i=0;i<2;i++){
+ //        for(j=0;j<2;j++) {
+ //           switch(j) {
+ //           case 0: printf("%.2d ", vget_lane_s32(test_rotate[i], 0)); break;
+ //           case 1: printf("%.2d ", vget_lane_s32(test_rotate[i], 1)); break;
+ //           }
+	// 	}
+	// 	printf("\n");
+	// } 
     return 0;
 }
