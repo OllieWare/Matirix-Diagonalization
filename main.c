@@ -154,9 +154,55 @@ int32_t saturate_q15(int64_t val) {
     return (int32_t)val;
 } 
 
+int32_t get_lane(int32x4_t vec, int index) {
+    switch (index) {
+        case 0: return vget_lane_s32(vec, 0);
+        case 1: return vget_lane_s32(vec, 1);
+        case 2: return vget_lane_s32(vec, 2);
+        case 3: return vget_lane_s32(vec, 3);
+        default: return 0; // Should never happen
+    }
+}
 
+int32x4_t set_lane(int32x4_t vec, int32_t value, int index) {
+    switch (index) {
+        case 0: return vset_lane_s32(value, vec, 0);
+        case 1: return vset_lane_s32(value, vec, 1);
+        case 2: return vset_lane_s32(value, vec, 2);
+        case 3: return vset_lane_s32(value, vec, 3);
+        default: return vec; // Should never happen
+    }
+}
 
+int32_t saturate_q15(int64_t value) {
+    if (value > 32767) return 32767;
+    if (value < -32768) return -32768;
+    return (int32_t)value;
+}
 
+void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
+    for (int i = 0; i < 4; i++) { // Row of m1
+        int32x4_t row_result = vdupq_n_s32(0); // Initialize result row
+        for (int j = 0; j < 4; j++) { // Column of m2
+            int64_t sum = 0;
+            for (int k = 0; k < 4; k++) {
+                int32_t a = get_lane(m1[i], k); // m1[i][k]
+                int32_t b = get_lane(m2[k], j); // m2[k][j]
+                sum += (int64_t)a * b;
+            }
+
+            // Fixed-point rounding
+            sum = (sum + (1 << 14)) >> 15;
+
+            // Saturate to Q15
+            int32_t safe = saturate_q15(sum);
+
+            // Set result in row_result[j]
+            row_result = set_lane(row_result, safe, j);
+        }
+        target[i] = row_result;
+    }
+}
 
 void matrix_multiply(int32x2_t* m1, int32x2_t* m2, int32x2_t* target){
 int64_t N00 = (vget_lane_s32 (m1[0],0) * vget_lane_s32 (m2[0],0)) +(vget_lane_s32 (m1[0],1) * vget_lane_s32 (m2[1],0)) ;
@@ -505,9 +551,29 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
+			int32x4_t M_prime[4] = {{}, {}, {}, {}};
+			matrix_multiply_4x4(VT_prime, transpose_32x4x4(VT), VT);
+			matrix_multiply_4x4(U_prime, M, M_prime);
+			matrix_multiply_4x4(M_prime, transpose_32x4x4(VT_prime), M);
+			matrix_multiply_4x4(U, transpose_32x4x4(U_prime), U);
     	}
     	printf("\n");
     }
+	printf("Sweep 1 of Matrix M:\n");
+	int k;
+	int l;
+	for(k=0;k<4;k++){
+		for(l=0;l<4;l++) {
+			switch(l) {
+				case 0: printf("%.2d ", vgetq_lane_s32(M[k], 0)); break;
+				case 1: printf("%.2d ", vgetq_lane_s32(M[k], 1)); break;
+				case 2: printf("%.2d ", vgetq_lane_s32(M[k], 2)); break;
+				case 3: printf("%.2d ", vgetq_lane_s32(M[k], 3)); break;
+			}
+		}
+		printf("\n");
+	}
+	printf("\n");
     //transpose_32x4(M);
     //for (i = 0; i < 4; i++) {
       //  for (j = 0; j < 4; j++) {
