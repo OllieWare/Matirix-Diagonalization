@@ -290,30 +290,32 @@ int main() {
     int32x4_t M[4] = {m_1, m_2, m_3, m_4};
     int i;
     int j;
-    for (i=0; i<4; i++){	
-    	for (j = 0; j < 4; j++) {
-    		switch (j){
-    //case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
-    //case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
-    //case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
-    //case 3:  printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
+    for (i=0; i<4; i++){
+	
+    	for (j = i; j < 4; j++) {
+	 int32x2_t temp[2]= {{},{}};
+    		switch (i){
+    case 0: temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0); break;
+    case 1: temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 0); break;
+    case 2: temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 0); break;
+    case 3: temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 0); break;
     		}
     	}
     	printf("\n");
     }
-    transpose_32x4(M);
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            switch(j) {
+    //transpose_32x4(M);
+    //for (i = 0; i < 4; i++) {
+      //  for (j = 0; j < 4; j++) {
+        //    switch(j) {
 	//	case 0: printf("%.2d ", vgetq_lane_s32(M[i], 0)); break;
 	//	case 1: printf("%.2d ", vgetq_lane_s32(M[i], 1)); break;
 	//	case 2: printf("%.2d ", vgetq_lane_s32(M[i], 2)); break;
 	//	case 3: printf("%.2d ", vgetq_lane_s32(M[i], 3)); break;
-          	}
-        }
-        printf("\n");
-    }
-    printf("\n");
+        //  	}
+     //   }
+       // printf("\n");
+   // }
+    // printf("\n");
 
 // 		2x2 Matrix Test
 	// ------------------
