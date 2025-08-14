@@ -548,6 +548,19 @@ int main() {
 			int32x4_t M_prime[4] = {{}, {}, {}, {}};
 			transpose_32x4x4(VT);
 			matrix_multiply_4x4(VT_prime, VT, VT);
+			printf("Matrix VT after mult:\n");
+			for(k=0;k<4;k++){
+        		for(l=0;l<4;l++) {
+           			switch(l) {
+           				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
+           			}
+				}
+				printf("\n");
+			}
+			printf("\n");
 			matrix_multiply_4x4(U_prime, M, M_prime);
 			transpose_32x4x4(VT_prime);
 			matrix_multiply_4x4(M_prime, VT_prime, M);
