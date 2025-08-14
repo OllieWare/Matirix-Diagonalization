@@ -401,103 +401,105 @@ int main() {
 
 			// Reset R_R
 			transpose_32x2(R_R);
+			int32x4_t U_prime[4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+			int32x4_t VT_prime[4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 			switch(i) {
 				case 0:
 					switch(j) {
 						case 1:
-							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 0);
-							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 1);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 0);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 1);
+							U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 0);
+							U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U_prime[i], 1);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 0);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 1);
 							
-						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 0);
-							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 1);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 0);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 1);
+						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 0);
+							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 1);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 0);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 1);
 							break;
 						case 2:
-						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 0);
-							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 2);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 0);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 2);
+						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 0);
+							U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U_prime[i], 2);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 0);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 2);
 							
-						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 0);
-							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 2);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 0);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 2);
+						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 0);
+							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 2);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 0);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 2);
 							break;
 						case 3:
-						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 0);
-							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 3);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 0);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 3);
+						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 0);
+							U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U_prime[i], 3);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 0);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 3);
 							
-						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 0);
-							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 3);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 0);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 3);
+						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 0);
+							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 3);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 0);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 3);
 							break;
 					}
 					break;
 				case 1:
 					switch(j) {
 						case 2:
-						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 1);
-							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 2);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 1);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 2);
+						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 1);
+							U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U_prime[i], 2);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 1);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 2);
 							
-						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 1);
-							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 2);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 1);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 2);
+						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 1);
+							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 2);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 1);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 2);
 							break;
 						case 3:
-						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 1);
-							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 3);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 1);
-							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 3);
+						    U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 1);
+							U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U_prime[i], 3);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 1);
+							U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 3);
 							
-						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 1);
-							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 3);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 1);
-							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 3);
+						    VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 1);
+							VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 3);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 1);
+							VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 3);
 							break;
 					}
 					break;
 				case 2:
-					U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 2);
-					U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 3);
-					U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 2);
-					U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 3);
+					U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U_prime[i], 2);
+					U_prime[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U_prime[i], 3);
+					U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U_prime[j], 2);
+					U_prime[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U_prime[j], 3);
 					
-					VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 2);
-					VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 3);
-					VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 2);
-					VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 3);
+					VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT_primeT[i], 2);
+					VT_primeT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT_primeT[i], 3);
+					VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT_primeT[j], 2);
+					VT_primeT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_primeT[j], 3);
 					break;
 			}
-			printf("Matrix U:\n");
+			printf("Matrix U_prime:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
            			switch(l) {
-           				case 0: printf("%.2d ", vgetq_lane_s32(U[k], 0)); break;
-           				case 1: printf("%.2d ", vgetq_lane_s32(U[k], 1)); break;
-						case 2: printf("%.2d ", vgetq_lane_s32(U[k], 2)); break;
-           				case 3: printf("%.2d ", vgetq_lane_s32(U[k], 3)); break;
+           				case 0: printf("%.2d ", vgetq_lane_s32(U_prime[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(U_prime[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(U_prime[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(U_prime[k], 3)); break;
            			}
 				}
 				printf("\n");
 			}
 			printf("\n");
-			printf("Matrix VT:\n");
+			printf("Matrix VT_primeT:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
            			switch(l) {
-           				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
-           				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
-						case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
-           				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
+           				case 0: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(VT_primeT[k], 3)); break;
            			}
 				}
 				printf("\n");
