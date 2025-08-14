@@ -552,10 +552,13 @@ int main() {
 			}
 			printf("\n");
 			int32x4_t M_prime[4] = {{}, {}, {}, {}};
-			matrix_multiply_4x4(VT_prime, transpose_32x4x4(VT), VT);
+			transpose_32x4x4(VT);
+			matrix_multiply_4x4(VT_prime, VT, VT);
 			matrix_multiply_4x4(U_prime, M, M_prime);
-			matrix_multiply_4x4(M_prime, transpose_32x4x4(VT_prime), M);
-			matrix_multiply_4x4(U, transpose_32x4x4(U_prime), U);
+			transpose_32x4x4(VT_prime);
+			matrix_multiply_4x4(M_prime, VT_prime, M);
+			transpose_32x4x4(U_prime);
+			matrix_multiply_4x4(U, U_prime, U);
     	}
     	printf("\n");
     }
