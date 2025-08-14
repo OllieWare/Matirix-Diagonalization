@@ -297,46 +297,46 @@ int main() {
 			    case 0: 
 					switch(j) {
 					    case 1:
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0);
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 1);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],0),temp[1], 0);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],1),temp[1], 1);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 1);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],0),temp[1], 0);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],1),temp[1], 1);
 							break;
 					    case 2:
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0);
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 1);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],0),temp[1], 0);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],2),temp[1], 1);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 1);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],0),temp[1], 0);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],2),temp[1], 1);
 							break;
 						case 3:
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0);
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 1);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],0),temp[1], 0);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],0),temp[0], 0);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 1);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],0),temp[1], 0);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
 							break;
 					}
 					break;
 			    case 1:
 					switch(j) {
 					    case 2:
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 0);
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 1);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],1),temp[1], 0);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],2),temp[1], 1);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 0);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 1);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],1),temp[1], 0);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],2),temp[1], 1);
 							break;
 						case 3:
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 0);
-							temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 1);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],1),temp[1], 0);
-							temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],1),temp[0], 0);
+							temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 1);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],1),temp[1], 0);
+							temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
 							break;
 					}
 					break;
 			    case 2:
-					temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 0);
-					temp[0] = vsetq_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 1);
-					temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],2),temp[1], 0);
-					temp[1] = vsetq_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
+					temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],2),temp[0], 0);
+					temp[0] = vset_lane_s32(vgetq_lane_s32(M[i],3),temp[0], 1);
+					temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],2),temp[1], 0);
+					temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
 					break;
     		}
 			for(i=0;i<2;i++){
