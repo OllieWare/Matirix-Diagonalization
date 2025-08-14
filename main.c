@@ -187,11 +187,11 @@ target [1]= vset_lane_s32((int32_t) N11_safe, target[1], 1);
 //printf("Target11: %.2d \n ", vget_lane_s32(target[1], 1));
 
 }
-void rotate(int32x2_t* M) {
-    int32_t a = vget_lane_s32(M[1], 0);
-    int32_t b = vget_lane_s32(M[0], 1);
-    int sum_denom = (vget_lane_s32(M[1], 1) - vget_lane_s32(M[0],0));
-    int dif_denom = (vget_lane_s32(M[1], 1) + vget_lane_s32(M[0],0));
+void rotate(int32x2_t* N, int32x4_t* M, int32x4_t* U, int32x4_t* VT) {
+    int32_t a = vget_lane_s32(N[1], 0);
+    int32_t b = vget_lane_s32(N[0], 1);
+    int sum_denom = (vget_lane_s32(N[1], 1) - vget_lane_s32(N[0],0));
+    int dif_denom = (vget_lane_s32(N[1], 1) + vget_lane_s32(N[0],0));
     int64_t numerator;
     int sum;
     if (sum_denom!=0){ 
@@ -230,19 +230,19 @@ void rotate(int32x2_t* M) {
     get_rotatation(R_R, theta_r, 0);
     transpose_32x2(R_R);
 
-//Matrix Multiply R_L x M x R_R
-int32x2_t temp[2]={{},{}};
-matrix_multiply(R_L,M,temp);
-matrix_multiply(temp,R_R,M);
-//printf("M:%.2d \n ", vget_lane_s32(M[1], 1));
-//printf("L00:%.2d \n ", vget_lane_s32(R_L[0], 0));
-//printf("L01:%.2d \n ", vget_lane_s32(R_L[0], 1));
-//printf("L10:%.2d \n ", vget_lane_s32(R_L[1], 0));
-//printf("L11:%.2d \n ", vget_lane_s32(R_L[1], 1));
-//printf("R00:%.2d \n ", vget_lane_s32(R_R[0], 0));
-//printf("R01:%.2d \n ", vget_lane_s32(R_R[0], 1));
-//printf("R10:%.2d \n ", vget_lane_s32(R_R[1], 0));
-//printf("R11:%.2d \n ", vget_lane_s32(R_R[1], 1));
+	//Matrix Multiply R_L x M x R_R
+	int32x2_t temp_prime[2]={{},{}};
+	matrix_multiply(R_L,N,temp_prime);
+	matrix_multiply(temp_prime,R_R,N);
+	//printf("M:%.2d \n ", vget_lane_s32(M[1], 1));
+	//printf("L00:%.2d \n ", vget_lane_s32(R_L[0], 0));
+	//printf("L01:%.2d \n ", vget_lane_s32(R_L[0], 1));
+	//printf("L10:%.2d \n ", vget_lane_s32(R_L[1], 0));
+	//printf("L11:%.2d \n ", vget_lane_s32(R_L[1], 1));
+	//printf("R00:%.2d \n ", vget_lane_s32(R_R[0], 0));
+	//printf("R01:%.2d \n ", vget_lane_s32(R_R[0], 1));
+	//printf("R10:%.2d \n ", vget_lane_s32(R_R[1], 0));
+	//printf("R11:%.2d \n ", vget_lane_s32(R_R[1], 1));
 }
 
 void transpose_32x4x4(int32x4_t* M) {
@@ -351,7 +351,158 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
-			//rotate(temp);
+			// Rotate the 2x2 Matrix
+			int32_t a = vget_lane_s32(temp[1], 0);
+		    int32_t b = vget_lane_s32(temp[0], 1);
+		    int sum_denom = (vget_lane_s32(temp[1], 1) - vget_lane_s32(temp[0],0));
+		    int dif_denom = (vget_lane_s32(temp[1], 1) + vget_lane_s32(temp[0],0));
+		    int64_t numerator;
+		    int sum;
+		    if (sum_denom!=0){ 
+		    numerator = ((int64_t)(a + b) << 15);
+		    sum = (int32_t)((numerator + (sum_denom >> 1)) / sum_denom);
+		    }else{sum=32767;}
+		    int dif;
+		    if (dif_denom!=0){
+		    numerator = ((int64_t)(a - b) << 15);
+		    dif = (int32_t)((numerator + (dif_denom >> 1)) /dif_denom);
+		    }else{dif=32767;}
+		    //printf("sum: %d \n",sum);
+		    //printf("dif: %d \n",dif);
+		
+		    int sum_mirror;
+		    int dif_mirror;
+		    sum = arctan(sum,&sum_mirror) * 5;
+		    dif = arctan(dif,&dif_mirror) * 5;
+		    int mirror_L=sum_mirror;
+		    int mirror_R=(sum_mirror+dif_mirror);
+		    //printf("sum_tan: %d \n",sum);
+		    //printf("dif_tan: %d \n",dif);
+		    int theta_r = (sum + dif) >> 2;
+		    printf("R_Angle %d \n",theta_r);
+		    int theta_l = sum - theta_r;
+		    printf("L_Angle %d \n",theta_l);
+			theta_r = theta_r / 5;
+			theta_l = theta_l / 5;
+		    if(theta_r<=0){theta_r=1;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
+		    if(theta_l<=0){theta_l=1; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
+		    printf("R_Index %d \n",theta_r);
+		    printf("L_Index %d \n",theta_l);
+		    int32x2_t R_L[2] = { {}, {} };
+		    int32x2_t R_R[2] = { {}, {} };
+		    get_rotatation(R_L, theta_l, 0);
+		    get_rotatation(R_R, theta_r, 0);
+		    transpose_32x2(R_R);
+		
+			//Matrix Multiply R_L x M x R_R
+			int32x2_t temp_prime[2]={{},{}};
+			matrix_multiply(R_L,temp,temp_prime);
+			matrix_multiply(temp_prime,R_R,temp);
+
+			// Reset R_R
+			transpose_32x2(R_R);
+			switch(i) {
+				case 0:
+					switch(j) {
+						case 1:
+							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 0);
+							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 1);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 0);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 1);
+							
+						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 0);
+							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 1);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 0);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 1);
+							break;
+						case 2:
+						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 0);
+							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 2);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 0);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 2);
+							
+						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 0);
+							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 2);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 0);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 2);
+							break;
+						case 3:
+						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 0);
+							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 3);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 0);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 3);
+							
+						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 0);
+							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 3);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 0);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 3);
+							break;
+					}
+					break;
+				case 1:
+					switch(j) {
+						case 2:
+						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 1);
+							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 2);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 1);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 2);
+							
+						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 1);
+							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 2);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 1);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 2);
+							break;
+						case 3:
+						    U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 1);
+							U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 3);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 1);
+							U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 3);
+							
+						    VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 1);
+							VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 3);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 1);
+							VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 3);
+							break;
+					}
+					break;
+				case 2:
+					U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],0),U[i], 2);
+					U[i] = vsetq_lane_s32(vget_lane_s32(R_L[0],1),U[i], 3);
+					U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],0),U[j], 2);
+					U[j] = vsetq_lane_s32(vget_lane_s32(R_L[1],1),U[j], 3);
+					
+					VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],0),VT[i], 2);
+					VT[i] = vsetq_lane_s32(vget_lane_s32(R_R[0],1),VT[i], 3);
+					VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],0),VT[j], 2);
+					VT[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT[j], 3);
+					break;
+			}
+			printf("Matrix U:\n");
+			for(k=0;k<4;k++){
+        		for(l=0;l<4;l++) {
+           			switch(l) {
+           				case 0: printf("%.2d ", vget_lane_s32(U[k], 0)); break;
+           				case 1: printf("%.2d ", vget_lane_s32(U[k], 1)); break;
+						case 2: printf("%.2d ", vget_lane_s32(U[k], 2)); break;
+           				case 3: printf("%.2d ", vget_lane_s32(U[k], 3)); break;
+           			}
+				}
+				printf("\n");
+			}
+			printf("\n");
+			printf("Matrix VT:\n");
+			for(k=0;k<4;k++){
+        		for(l=0;l<4;l++) {
+           			switch(l) {
+           				case 0: printf("%.2d ", vget_lane_s32(VT[k], 0)); break;
+           				case 1: printf("%.2d ", vget_lane_s32(VT[k], 1)); break;
+						case 2: printf("%.2d ", vget_lane_s32(VT[k], 2)); break;
+           				case 3: printf("%.2d ", vget_lane_s32(VT[k], 3)); break;
+           			}
+				}
+				printf("\n");
+			}
+			printf("\n");
     	}
     	printf("\n");
     }
