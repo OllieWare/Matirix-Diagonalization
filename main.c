@@ -551,8 +551,8 @@ int main() {
 			}
 			printf("\n");
 			int32x4_t M_prime[4] = {{}, {}, {}, {}};
-			transpose_32x4x4(VT);
-			matrix_multiply_4x4(VT_prime, VT, VT);
+			transpose_32x4x4(&VT);
+			matrix_multiply_4x4(&VT_prime, &VT, &VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
@@ -566,11 +566,11 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
-			matrix_multiply_4x4(U_prime, M, M_prime);
-			transpose_32x4x4(VT_prime);
-			matrix_multiply_4x4(M_prime, VT_prime, M);
-			transpose_32x4x4(U_prime);
-			matrix_multiply_4x4(U, U_prime, U);
+			matrix_multiply_4x4(&U_prime, &M, &M_prime);
+			transpose_32x4x4(&VT_prime);
+			matrix_multiply_4x4(&M_prime, &VT_prime, &M);
+			transpose_32x4x4(&U_prime);
+			matrix_multiply_4x4(&U, &U_prime, &U);
     	}
     	printf("\n");
     }
