@@ -481,10 +481,10 @@ int main() {
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
            			switch(l) {
-           				case 0: printf("%.2d ", vget_lane_s32(U[k], 0)); break;
-           				case 1: printf("%.2d ", vget_lane_s32(U[k], 1)); break;
-						case 2: printf("%.2d ", vget_lane_s32(U[k], 2)); break;
-           				case 3: printf("%.2d ", vget_lane_s32(U[k], 3)); break;
+           				case 0: printf("%.2d ", vgetq_lane_s32(U[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(U[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(U[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(U[k], 3)); break;
            			}
 				}
 				printf("\n");
@@ -494,10 +494,10 @@ int main() {
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
            			switch(l) {
-           				case 0: printf("%.2d ", vget_lane_s32(VT[k], 0)); break;
-           				case 1: printf("%.2d ", vget_lane_s32(VT[k], 1)); break;
-						case 2: printf("%.2d ", vget_lane_s32(VT[k], 2)); break;
-           				case 3: printf("%.2d ", vget_lane_s32(VT[k], 3)); break;
+           				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
+           				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
+						case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
+           				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
            			}
 				}
 				printf("\n");
