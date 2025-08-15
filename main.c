@@ -273,10 +273,13 @@ int main() {
     int32x4_t VT[4] = {vt_1, vt_2, vt_3, vt_4};
     int32x4_t M[4] = {m_1, m_2, m_3, m_4};
 	int sweep_count = 0;
+
+	
 	while (sweep_count < MAX_SWEEPS && max_off_diag(M) > CONVERGENCE_THRESHOLD) {
 		sweep_count++;
 	    int i;
 	    int j;
+		//Select in Cyclyic Order
 	    for (i = 0; i < 3; i++){
 	    	for (j = i + 1; j < 4; j++) {
 		 		int32x2_t temp[2]= {{},{}};
@@ -326,6 +329,8 @@ int main() {
 						temp[1] = vset_lane_s32(vgetq_lane_s32(M[j],3),temp[1], 1);
 						break;
 	    		}
+
+				//calculate sum and dif
 				int32_t a = vget_lane_s32(temp[1], 0);
 			    int32_t b = vget_lane_s32(temp[0], 1);
 			    int sum_denom = (vget_lane_s32(temp[1], 1) - vget_lane_s32(temp[0],0));
@@ -349,10 +354,14 @@ int main() {
 				
 			    int sum_mirror;
 			    int dif_mirror;
+
+				//find relevant theta using arctan
 			    sum = arctan(sum,&sum_mirror);
 			    dif = arctan(dif,&dif_mirror);
 			    int mirror_L=sum_mirror;
 			    int mirror_R=(sum_mirror+dif_mirror);
+
+				//calculate Right and Left Rotation Matrix
 			    int theta_r = (sum + dif) >> 2;
 			    int theta_l = sum - theta_r;
 				theta_r = theta_r;
@@ -376,6 +385,8 @@ int main() {
 			    int32x2_t R_R[2] = { {}, {} };
 			    get_rotatation(R_L, theta_l, 0);
 			    get_rotatation(R_R, theta_r, 0);
+
+				//compute Matrix Multiplication
 			    transpose_32x2(R_R);
 			
 				int32x2_t temp_prime[2]={{},{}};
@@ -383,6 +394,9 @@ int main() {
 				matrix_multiply(temp_prime,R_R,temp);
 
 				transpose_32x2(R_R);
+
+
+				//identity matrix for safe handling
 				int32x4_t U_prime[4] = {
 					{32767,0,0,0},
 					{0,32767,0,0},
@@ -395,6 +409,8 @@ int main() {
 					{0,0,32767,0},
 					{0,0,0,32767}
 				};
+
+				//Cyclic insertion for VT and U
 				switch(i) {
 					case 0:
 						switch(j) {
@@ -471,6 +487,7 @@ int main() {
 						VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 3);
 						break;
 				}
+
 				
 				int32x4_t M_prime[4] = {{}, {}, {}, {}};
 				int32x4_t aa;
@@ -478,7 +495,8 @@ int main() {
 			    int32x4_t cc;
 			    int32x4_t dd;
 				int n;
-					
+
+				//calculate Matrix Transpose
 				int32x4x2_t temp_VT;
 			    temp_VT = vtrnq_s32(VT[0], VT[1]);
 			    VT[0] = temp_VT.val[0];
@@ -495,9 +513,11 @@ int main() {
 				VT[2] = cc;
 				VT[3] = dd;
 				
+				//Diagonalize on selected positions 
 				matrix_multiply_4x4(VT_prime, VT, VT);		
 				matrix_multiply_4x4(U_prime, M, M_prime);
-	
+				
+                //Another transpose	
 				int32x4x2_t temp_VT_prime;
 			    temp_VT_prime = vtrnq_s32(VT_prime[0], VT_prime[1]);
 			    VT_prime[0] = temp_VT_prime.val[0];
@@ -513,9 +533,11 @@ int main() {
 				VT_prime[1] = bb;
 				VT_prime[2] = cc;
 				VT_prime[3] = dd;
-				
+
+				//Continue Same Diagonalize
 				matrix_multiply_4x4(M_prime, VT_prime, M);
-	
+				
+	            //Yet Another Transpose
 				int32x4x2_t temp_U_prime;
 			    temp_U_prime = vtrnq_s32(U_prime[0], U_prime[1]);
 			    U_prime[0] = temp_U_prime.val[0];
@@ -532,10 +554,12 @@ int main() {
 				U_prime[2] = cc;
 				U_prime[3] = dd;
 				
+				//last part of diagonalize
 				matrix_multiply_4x4(U, U_prime, U);
 	    	}
 	    	printf("\n");
 	    }
+		//output sweep result
 		printf("Sweep %d of Matrix M:\n", sweep_count);
 		int k;
 		int l;
