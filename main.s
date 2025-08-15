@@ -12,75 +12,8 @@
 	.file	"main.c"
 	.text
 	.align	2
-	.global	categorize_angle
-	.arch armv7-a
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	categorize_angle, %function
-categorize_angle:
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	sub	r3, r0, #16384
-	cmp	r3, #0
-	eor	r2, r0, r0, asr #31
-	rsblt	r3, r3, #0
-	sub	r2, r2, r0, asr #31
-	cmp	r2, r3
-	blt	.L3
-	rsb	r0, r0, #32512
-	add	r0, r0, #255
-	cmp	r3, r0
-	movge	r0, #2
-	movlt	r0, #1
-	bx	lr
-.L3:
-	mov	r0, #0
-	bx	lr
-	.size	categorize_angle, .-categorize_angle
-	.align	2
-	.global	set_rotation
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	set_rotation, %function
-set_rotation:
-	@ args = 0, pretend = 0, frame = 16
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	movw	r3, #:lower16:.LANCHOR0
-	add	r0, r0, r0, lsl #1
-	movt	r3, #:upper16:.LANCHOR0
-	add	r3, r3, r0, lsl #2
-	ldr	r2, [r3, #4]
-	ldrsh	r0, [r3, #8]
-	rsb	r1, r2, #0
-	sub	sp, sp, #16
-	sxth	r3, r2
-	sxth	r1, r1
-	strh	r3, [sp, #12]	@ movhi
-	strh	r3, [sp, #2]	@ movhi
-	strh	r0, [sp, #8]	@ movhi
-	strh	r0, [sp, #14]	@ movhi
-	strh	r0, [sp]	@ movhi
-	strh	r0, [sp, #6]	@ movhi
-	strh	r1, [sp, #10]	@ movhi
-	strh	r1, [sp, #4]	@ movhi
-	movw	r2, #:lower16:rot_left
-	movw	r3, #:lower16:rot_right
-	vldr	d17, [sp, #8]
-	vldr	d16, [sp]
-	movt	r2, #:upper16:rot_left
-	movt	r3, #:upper16:rot_right
-	vstr	d17, [r2]
-	vstr	d16, [r3]
-	add	sp, sp, #16
-	@ sp needed
-	bx	lr
-	.size	set_rotation, .-set_rotation
-	.align	2
 	.global	arctan
+	.arch armv7-a
 	.syntax unified
 	.arm
 	.fpu neon
@@ -94,24 +27,21 @@ arctan:
 	eorcc	ip, r0, r0, asr #31
 	movcc	r2, #0
 	movcs	r2, #1
+	movw	r3, #:lower16:.LANCHOR0
 	subcc	ip, ip, r0, asr #31
 	movwcs	ip, #32767
 	mov	r0, #0
-	ldr	r3, .L14
 	str	r2, [r1]
-.L11:
+	movt	r3, #:upper16:.LANCHOR0
+.L4:
 	ldr	r2, [r3], #4
 	cmp	r2, ip
 	bxge	lr
 	add	r0, r0, #1
 	cmp	r0, #46
-	bne	.L11
+	bne	.L4
 	mvn	r0, #0
 	bx	lr
-.L15:
-	.align	2
-.L14:
-	.word	.LANCHOR0+552
 	.size	arctan, .-arctan
 	.align	2
 	.global	cos_t
@@ -127,7 +57,7 @@ cos_t:
 	add	r0, r0, r0, lsl #1
 	movt	r3, #:upper16:.LANCHOR0
 	add	r3, r3, r0, lsl #2
-	ldr	r0, [r3, #8]
+	ldr	r0, [r3, #192]
 	bx	lr
 	.size	cos_t, .-cos_t
 	.align	2
@@ -144,7 +74,7 @@ sin_t:
 	add	r0, r0, r0, lsl #1
 	movt	r3, #:upper16:.LANCHOR0
 	add	r3, r3, r0, lsl #2
-	ldr	r0, [r3, #4]
+	ldr	r0, [r3, #188]
 	bx	lr
 	.size	sin_t, .-sin_t
 	.align	2
@@ -162,31 +92,31 @@ get_rotatation:
 	add	r2, r1, r1, lsl #1
 	movt	r3, #:upper16:.LANCHOR0
 	add	r3, r3, r2, lsl #2
-	ldr	r2, [r3, #8]
+	ldr	r2, [r3, #192]
 	cmp	r1, #0
 	vmov.32	d16[0], r2
 	vstr	d16, [r0]
-	blt	.L19
-	ldr	r2, [r3, #4]
+	blt	.L11
+	ldr	r2, [r3, #188]
 	vldr	d17, [r0, #8]
 	rsb	r2, r2, #0
 	vmov.32	d16[1], r2
 	vstr	d16, [r0]
 	vmov	d16, d17  @ v2si
-	add	r2, r3, #4
+	add	r2, r3, #188
 	vld1.32	{d16[0]}, [r2]
 	vstr	d16, [r0, #8]
-	add	r3, r3, #8
+	add	r3, r3, #192
 	vld1.32	{d16[1]}, [r3]
 	vstr	d16, [r0, #8]
 	bx	lr
-.L19:
-	add	r2, r3, #4
+.L11:
+	add	r2, r3, #188
 	vld1.32	{d16[1]}, [r2]
 	vstr	d16, [r0]
 	vldr	d16, [r0, #8]
-	ldr	r2, [r3, #4]
-	add	r3, r3, #8
+	ldr	r2, [r3, #188]
+	add	r3, r3, #192
 	rsb	r2, r2, #0
 	vmov.32	d16[0], r2
 	vstr	d16, [r0, #8]
@@ -225,7 +155,7 @@ saturate_q15:
 	@ link register save eliminated.
 	cmp	r0, #32768
 	sbcs	r3, r1, #0
-	bge	.L24
+	bge	.L16
 	push	{r4, r5}
 	mov	r4, #32768
 	mvn	r5, #0
@@ -237,76 +167,10 @@ saturate_q15:
 	movt	r3, 65535
 	movlt	r0, r3
 	bx	lr
-.L24:
+.L16:
 	movw	r0, #32767
 	bx	lr
 	.size	saturate_q15, .-saturate_q15
-	.align	2
-	.global	get_lane
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	get_lane, %function
-get_lane:
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	cmp	r0, #3
-	ldrls	pc, [pc, r0, asl #2]
-	b	.L37
-.L33:
-	.word	.L36
-	.word	.L35
-	.word	.L34
-	.word	.L32
-.L32:
-	vmov.32	r0, d1[1]
-	bx	lr
-.L34:
-	vmov.32	r0, d1[0]
-	bx	lr
-.L35:
-	vmov.32	r0, d0[1]
-	bx	lr
-.L36:
-	vmov.32	r0, d0[0]
-	bx	lr
-.L37:
-	mov	r0, #0
-	bx	lr
-	.size	get_lane, .-get_lane
-	.align	2
-	.global	set_lane
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	set_lane, %function
-set_lane:
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	cmp	r1, #3
-	ldrls	pc, [pc, r1, asl #2]
-	b	.L38
-.L41:
-	.word	.L44
-	.word	.L43
-	.word	.L42
-	.word	.L40
-.L40:
-	vmov.32	d1[1], r0
-.L38:
-	bx	lr
-.L42:
-	vmov.32	d1[0], r0
-	bx	lr
-.L43:
-	vmov.32	d0[1], r0
-	bx	lr
-.L44:
-	vmov.32	d0[0], r0
-	bx	lr
-	.size	set_lane, .-set_lane
 	.section	.rodata
 	.align	3
 .LC1:
@@ -364,7 +228,7 @@ matrix_multiply_4x4:
 	add	r3, r0, #64
 	str	r2, [sp, #52]
 	str	r3, [sp, #32]
-.L72:
+.L48:
 	vld1.64	{d18-d19}, [fp:64]
 	vmov.32	r0, d18[0]
 	vmov.32	lr, d18[1]
@@ -385,35 +249,35 @@ matrix_multiply_4x4:
 	mov	r9, r3
 	vmov.i32	q8, #0  @ v4si
 	str	r6, [sp, #20]
-	beq	.L55
-.L126:
+	beq	.L31
+.L102:
 	cmp	r1, #3
-	beq	.L56
+	beq	.L32
 	cmp	r1, #1
-	beq	.L123
+	beq	.L99
 	ldrd	r2, [sp]
 	cmp	r1, #2
-	beq	.L60
+	beq	.L36
 	cmp	r1, #3
-	beq	.L59
+	beq	.L35
 	cmp	r1, #1
-	beq	.L61
+	beq	.L37
 	ldrd	r2, [sp, #8]
 	cmp	r1, #2
-	beq	.L64
+	beq	.L40
 	cmp	r1, #3
-	beq	.L63
+	beq	.L39
 	cmp	r1, #1
-	beq	.L65
+	beq	.L41
 	cmp	r1, #2
 	mov	r2, r8
 	mov	r3, r9
 	vmov.32	r4, d19[1]
-	beq	.L68
+	beq	.L44
 	cmp	r1, #3
-	beq	.L67
+	beq	.L43
 	cmp	r1, #1
-	beq	.L69
+	beq	.L45
 	vmov.32	r3, d20[0]
 	mov	r6, r8
 	mov	r7, r9
@@ -425,8 +289,8 @@ matrix_multiply_4x4:
 	asr	r3, r5, #15
 	cmp	r2, #32768
 	sbcs	r4, r3, #0
-	bge	.L124
-.L71:
+	bge	.L100
+.L47:
 	mov	r4, #32768
 	mvn	r5, #0
 	mov	r7, #32768
@@ -435,30 +299,30 @@ matrix_multiply_4x4:
 	sbcs	r4, r3, r5
 	movt	r7, 65535
 	movlt	r2, r7
-.L48:
+.L24:
 	cmp	r1, #2
-	beq	.L49
+	beq	.L25
 	cmp	r1, #3
-	beq	.L121
+	beq	.L97
 	cmp	r1, #1
-	beq	.L51
+	beq	.L27
 	cmp	r1, #3
 	vmov.32	d16[0], r2
-	beq	.L125
-.L52:
+	beq	.L101
+.L28:
 	add	r1, r1, #1
 	cmp	r1, #2
-	bne	.L126
-.L55:
+	bne	.L102
+.L31:
 	ldrd	r2, [sp, #24]
-.L60:
+.L36:
 	vmov.32	r4, d25[0]
 	smlal	r2, r3, r4, lr
-.L64:
+.L40:
 	vmov.32	r4, d23[0]
 	smlal	r2, r3, ip, r4
 	vmov.32	r4, d19[1]
-.L68:
+.L44:
 	ldr	r5, [sp, #48]
 	smlal	r2, r3, r4, r5
 	adds	r4, r2, #16384
@@ -468,25 +332,25 @@ matrix_multiply_4x4:
 	asr	r3, r5, #15
 	cmp	r2, #32768
 	sbcs	r4, r3, #0
-	blt	.L71
+	blt	.L47
 	movw	r2, #32767
-.L49:
+.L25:
 	vmov.32	d17[0], r2
-	b	.L52
-.L121:
+	b	.L28
+.L97:
 	ldr	r6, [sp, #20]
-.L50:
+.L26:
 	vmov.32	d17[1], r2
-.L53:
+.L29:
 	ldr	r3, [sp, #32]
 	add	fp, fp, #16
 	cmp	fp, r3
 	vst1.64	{d16-d17}, [r6:64]!
-	bne	.L72
+	bne	.L48
 	ldr	lr, [sp, #52]
 	add	r4, sp, #56
 	add	r5, sp, #120
-.L73:
+.L49:
 	mov	ip, r4
 	ldmia	ip!, {r0, r1, r2, r3}
 	cmp	ip, r5
@@ -496,21 +360,21 @@ matrix_multiply_4x4:
 	str	r3, [lr, #12]	@ unaligned
 	mov	r4, ip
 	add	lr, lr, #16
-	bne	.L73
+	bne	.L49
 	add	sp, sp, #124
 	@ sp needed
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
-.L123:
+.L99:
 	vmov.32	r2, d26[1]
 	smull	r2, r3, r0, r2
-.L61:
+.L37:
 	vmov.32	r4, d24[1]
 	smlal	r2, r3, r4, lr
-.L65:
+.L41:
 	vmov.32	r4, d22[1]
 	smlal	r2, r3, ip, r4
 	vmov.32	r4, d19[1]
-.L69:
+.L45:
 	vmov.32	r5, d20[1]
 	smlal	r2, r3, r4, r5
 	adds	r4, r2, #16384
@@ -520,22 +384,22 @@ matrix_multiply_4x4:
 	asr	r3, r5, #15
 	cmp	r2, #32768
 	sbcs	r4, r3, #0
-	blt	.L71
+	blt	.L47
 	movw	r2, #32767
-.L51:
+.L27:
 	vmov.32	d16[1], r2
-	b	.L52
-.L56:
+	b	.L28
+.L32:
 	vmov.32	r2, d27[1]
 	smull	r2, r3, r2, r0
-.L59:
+.L35:
 	vmov.32	r4, d25[1]
 	smlal	r2, r3, lr, r4
-.L63:
+.L39:
 	vmov.32	r4, d23[1]
 	smlal	r2, r3, r4, ip
 	vmov.32	r4, d19[1]
-.L67:
+.L43:
 	vmov.32	r5, d21[1]
 	smlal	r2, r3, r5, r4
 	adds	r4, r2, #16384
@@ -545,16 +409,16 @@ matrix_multiply_4x4:
 	asr	r3, r5, #15
 	cmp	r2, #32768
 	sbcs	r4, r3, #0
-	blt	.L71
+	blt	.L47
 	ldr	r6, [sp, #20]
 	movw	r2, #32767
-	b	.L50
-.L124:
+	b	.L26
+.L100:
 	movw	r2, #32767
-	b	.L48
-.L125:
+	b	.L24
+.L101:
 	ldr	r6, [sp, #20]
-	b	.L53
+	b	.L29
 	.size	matrix_multiply_4x4, .-matrix_multiply_4x4
 	.align	2
 	.global	matrix_multiply
@@ -617,7 +481,7 @@ matrix_multiply:
 	asr	r5, r5, #15
 	asr	fp, fp, #15
 	movwge	r6, #32767
-	bge	.L128
+	bge	.L104
 	mov	r8, #32768
 	mvn	r9, #0
 	mov	r3, #32768
@@ -626,11 +490,11 @@ matrix_multiply:
 	sbcs	ip, r7, r9
 	movt	r3, 65535
 	movlt	r6, r3
-.L128:
+.L104:
 	cmp	r0, #32768
 	sbcs	r3, r1, #0
 	movwge	r0, #32767
-	bge	.L129
+	bge	.L105
 	mov	r8, #32768
 	mvn	r9, #0
 	mov	r3, #32768
@@ -639,11 +503,11 @@ matrix_multiply:
 	sbcs	ip, r1, r9
 	movt	r3, 65535
 	movlt	r0, r3
-.L129:
+.L105:
 	cmp	r4, #32768
 	sbcs	r3, r5, #0
 	movwge	r4, #32767
-	bge	.L130
+	bge	.L106
 	mov	r8, #32768
 	mvn	r9, #0
 	mov	r3, #32768
@@ -652,11 +516,11 @@ matrix_multiply:
 	sbcs	r1, r5, r9
 	movt	r3, 65535
 	movlt	r4, r3
-.L130:
+.L106:
 	cmp	r10, #32768
 	sbcs	r3, fp, #0
 	movwge	r10, #32767
-	bge	.L131
+	bge	.L107
 	mov	r8, #32768
 	mvn	r9, #0
 	mov	r3, #32768
@@ -665,7 +529,7 @@ matrix_multiply:
 	sbcs	r1, fp, r9
 	movt	r3, 65535
 	movlt	r10, r3
-.L131:
+.L107:
 	vldr	d17, [r2]
 	vldr	d16, [r2, #8]
 	vmov.32	d17[0], r6
@@ -676,305 +540,6 @@ matrix_multiply:
 	vstr	d16, [r2, #8]
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
 	.size	matrix_multiply, .-matrix_multiply
-	.global	__aeabi_ldivmod
-	.align	2
-	.global	rotate
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	rotate, %function
-rotate:
-	@ args = 0, pretend = 0, frame = 48
-	@ frame_needed = 0, uses_anonymous_args = 0
-	vldr	d17, [r0, #8]
-	vldr	d16, [r0]
-	vmov.32	r3, d17[1]
-	vmov.32	r1, d16[0]
-	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
-	subs	r2, r3, r1
-	sub	sp, sp, #52
-	mov	r4, r0
-	add	r7, r1, r3
-	vmov.32	r9, d17[0]
-	vmov.32	r8, d16[1]
-	beq	.L142
-	add	r0, r8, r9
-	asr	r1, r0, #31
-	asr	r3, r2, #1
-	lsl	fp, r1, #15
-	lsl	r10, r0, #15
-	orr	fp, fp, r0, lsr #17
-	adds	r0, r10, r3
-	adc	r1, fp, r3, asr #31
-	asr	r3, r2, #31
-	bl	__aeabi_ldivmod
-	cmp	r7, #0
-	mov	r5, r0
-	add	r6, r0, #32768
-	beq	.L165
-.L156:
-	sub	r2, r9, r8
-	asr	r3, r2, #31
-	lsl	r3, r3, #15
-	asr	r0, r7, #1
-	orr	r3, r3, r2, lsr #17
-	lsl	r2, r2, #15
-	adds	r8, r2, r0
-	adc	r9, r3, r0, asr #31
-	mov	r2, r7
-	asr	r3, r7, #31
-	mov	r0, r8
-	mov	r1, r9
-	bl	__aeabi_ldivmod
-	add	r7, r0, #32768
-.L143:
-	cmp	r6, #65536
-	movwcs	lr, #32767
-	eorcc	lr, r5, r5, asr #31
-	subcc	lr, lr, r5, asr #31
-.L144:
-	ldr	r1, .L171
-	mov	r3, #0
-	mov	r2, r1
-	b	.L146
-.L167:
-	add	r3, r3, #1
-	cmp	r3, #46
-	beq	.L166
-.L146:
-	ldr	ip, [r2], #4
-	cmp	lr, ip
-	bgt	.L167
-.L145:
-	cmp	r7, #65536
-	eorcc	ip, r0, r0, asr #31
-	subcc	ip, ip, r0, asr #31
-	movwcs	ip, #32767
-	mov	r2, #0
-	b	.L149
-.L169:
-	add	r2, r2, #1
-	cmp	r2, #46
-	beq	.L168
-.L149:
-	ldr	r0, [r1], #4
-	cmp	r0, ip
-	blt	.L169
-.L148:
-	add	r2, r2, r3
-	asr	r2, r2, #2
-	sub	r3, r3, r2
-	cmp	r3, #46
-	movw	ip, #:lower16:.LANCHOR0
-	vmov.i32	q8, #0  @ ti
-	beq	.L150
-	mov	r0, sp
-	lsl	r1, r3, #1
-	movt	ip, #:upper16:.LANCHOR0
-	add	r5, r1, r3
-	add	r5, ip, r5, lsl #2
-	add	r6, sp, #16
-	cmp	r3, #0
-	ldr	lr, [r5, #8]
-	vst1.64	{d16-d17}, [r0:64]
-	vst1.64	{d16-d17}, [r6:64]
-	bge	.L155
-	vldr	d16, [sp, #8]
-	vmov.i32	d17, #0  @ v2si
-	ldr	r3, [r5, #4]
-	vmov.32	d17[0], lr
-	rsb	r1, r3, #0
-	vmov.32	d16[0], r1
-	vmov.32	d17[1], r3
-	vmov.32	d16[1], lr
-	cmn	r2, #1
-	vstr	d17, [sp]
-	vstr	d16, [sp, #8]
-	vldr	d17, [sp, #16]
-	beq	.L153
-.L170:
-	add	r2, r2, r2, lsl #1
-	add	ip, ip, r2, lsl #2
-	ldr	r3, [ip, #8]
-	vldr	d16, [sp, #24]
-	vmov.32	d17[0], r3
-	ldr	r2, [ip, #4]
-	rsb	r1, r2, #0
-	vmov.32	d17[1], r1
-	vmov.32	d16[0], r2
-	vstr	d17, [sp, #16]
-	vmov.32	d16[1], r3
-	vmov	d20, d17  @ v2si
-.L154:
-	vmov	d17, d20  @ v2si
-	vmov.i32	q9, #0  @ ti
-	vuzp.32	d17, d16
-	add	r5, sp, #32
-	mov	r2, r5
-	mov	r1, r4
-	vstr	d17, [sp, #16]
-	vstr	d16, [sp, #24]
-	vst1.64	{d18-d19}, [r5:64]
-	bl	matrix_multiply
-	mov	r2, r4
-	mov	r1, r6
-	mov	r0, r5
-	bl	matrix_multiply
-	add	sp, sp, #52
-	@ sp needed
-	pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
-.L142:
-	cmp	r7, #0
-	bne	.L160
-	movw	lr, #32767
-	movw	r7, #65535
-	mov	r0, lr
-	b	.L144
-.L150:
-	mov	r0, sp
-	add	r6, sp, #16
-	vst1.64	{d16-d17}, [r0:64]
-	vst1.64	{d16-d17}, [r6:64]
-	mov	r3, #45
-	mov	r1, #90
-	movt	ip, #:upper16:.LANCHOR0
-	ldr	lr, [ip, #548]
-.L155:
-	vldr	d17, [sp, #8]
-	vmov.i32	d16, #0  @ v2si
-	add	r3, r1, r3
-	add	r3, ip, r3, lsl #2
-	ldr	r1, [r3, #4]
-	vmov.32	d16[0], lr
-	vmov.32	d17[0], r1
-	add	r3, r3, #8
-	rsb	r1, r1, #0
-	vld1.32	{d17[1]}, [r3]
-	vmov.32	d16[1], r1
-	cmn	r2, #1
-	vstr	d17, [sp, #8]
-	vstr	d16, [sp]
-	vldr	d17, [sp, #16]
-	bne	.L170
-.L153:
-	ldr	r3, [ip, #-4]
-	vldr	d16, [sp, #24]
-	vmov.32	d17[0], r3
-	ldr	r2, [ip, #-8]
-	rsb	r1, r2, #0
-	vmov.32	d17[1], r2
-	vmov.32	d16[0], r1
-	vstr	d17, [sp, #16]
-	vmov.32	d16[1], r3
-	vmov	d20, d17  @ v2si
-	b	.L154
-.L165:
-	movw	r7, #65535
-	movw	r0, #32767
-	b	.L143
-.L160:
-	movw	r6, #65535
-	movw	r5, #32767
-	b	.L156
-.L166:
-	mvn	r3, #0
-	b	.L145
-.L168:
-	mvn	r2, #0
-	b	.L148
-.L172:
-	.align	2
-.L171:
-	.word	.LANCHOR0+552
-	.size	rotate, .-rotate
-	.align	2
-	.global	transpose_32x4x4
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	transpose_32x4x4, %function
-transpose_32x4x4:
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	vldr	d20, [r0, #32]
-	vldr	d21, [r0, #40]
-	vld1.64	{d22-d23}, [r0:64]
-	vldr	d18, [r0, #16]
-	vldr	d19, [r0, #24]
-	vldr	d16, [r0, #48]
-	vldr	d17, [r0, #56]
-	vmov	d24, d22  @ v2si
-	vmov	d25, d20  @ v2si
-	vmov	d22, d23  @ v2si
-	vmov	d20, d18  @ v2si
-	vmov	d23, d21  @ v2si
-	vmov	d21, d16  @ v2si
-	vmov	d16, d19  @ v2si
-	vst1.64	{d24-d25}, [r0:64]
-	vstr	d22, [r0, #32]
-	vstr	d23, [r0, #40]
-	vstr	d20, [r0, #16]
-	vstr	d21, [r0, #24]
-	vstr	d16, [r0, #48]
-	vstr	d17, [r0, #56]
-	bx	lr
-	.size	transpose_32x4x4, .-transpose_32x4x4
-	.align	2
-	.global	transpose_32x2x2
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	transpose_32x2x2, %function
-transpose_32x2x2:
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	vld1.64	{d20-d21}, [r0:64]
-	vldr	d22, [r0, #16]
-	vldr	d23, [r0, #24]
-	vmov	q9, q10  @ v4si
-	vmov	q8, q11  @ v4si
-	vtrn.32	q9, q8
-	vst1.64	{d18-d19}, [r0:64]
-	vstr	d16, [r0, #16]
-	vstr	d17, [r0, #24]
-	bx	lr
-	.size	transpose_32x2x2, .-transpose_32x2x2
-	.align	2
-	.global	transpose_32x4
-	.syntax unified
-	.arm
-	.fpu neon
-	.type	transpose_32x4, %function
-transpose_32x4:
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	@ link register save eliminated.
-	vld1.64	{d18-d19}, [r0:64]
-	vldr	d16, [r0, #16]
-	vldr	d17, [r0, #24]
-	vmov.i32	q11, #0  @ v4si
-	vtrn.32	q9, q8
-	vmov	q10, q11  @ v4si
-	vmov	q13, q9  @ v4si
-	vmov	q14, q8  @ v4si
-	vmov	d24, d18  @ v2si
-	vmov	d25, d22  @ v2si
-	vmov	d18, d16  @ v2si
-	vmov	d22, d27  @ v2si
-	vmov	d19, d20  @ v2si
-	vmov	d16, d29  @ v2si
-	vmov	d17, d21  @ v2si
-	vst1.64	{d24-d25}, [r0:64]
-	vstr	d22, [r0, #32]
-	vstr	d23, [r0, #40]
-	vstr	d18, [r0, #16]
-	vstr	d19, [r0, #24]
-	vstr	d16, [r0, #48]
-	vstr	d17, [r0, #56]
-	bx	lr
-	.size	transpose_32x4, .-transpose_32x4
 	.align	2
 	.global	max_off_diag
 	.syntax unified
@@ -1052,6 +617,7 @@ max_off_diag:
 	movge	r0, r3
 	bx	lr
 	.size	max_off_diag, .-max_off_diag
+	.global	__aeabi_ldivmod
 	.section	.rodata
 	.align	3
 .LC4:
@@ -1079,140 +645,135 @@ max_off_diag:
 	.fpu neon
 	.type	main, %function
 main:
-	@ args = 0, pretend = 0, frame = 496
+	@ args = 0, pretend = 0, frame = 488
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	movw	r3, #:lower16:.LANCHOR0
-	vpush.64	{d8, d9, d10}
+	push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	movt	r3, #:upper16:.LANCHOR0
-	sub	sp, sp, #500
+	vpush.64	{d8, d9, d10}
 	vldr	d22, [r3, #736]
 	vldr	d23, [r3, #744]
-	vldr	d20, [r3, #752]
-	vldr	d21, [r3, #760]
-	vldr	d18, [r3, #768]
-	vldr	d19, [r3, #776]
-	vldr	d16, [r3, #784]
-	vldr	d17, [r3, #792]
-	vldr	d24, [r3, #800]
-	vldr	d25, [r3, #808]
-	vldr	d26, [r3, #816]
-	vldr	d27, [r3, #824]
-	vldr	d28, [r3, #832]
-	vldr	d29, [r3, #840]
-	vldr	d30, [r3, #848]
-	vldr	d31, [r3, #856]
-	vldr	d6, [r3, #864]
-	vldr	d7, [r3, #872]
-	vldr	d4, [r3, #880]
-	vldr	d5, [r3, #888]
-	vldr	d2, [r3, #896]
-	vldr	d3, [r3, #904]
-	vldr	d0, [r3, #912]
-	vldr	d1, [r3, #920]
-	str	r3, [sp, #24]
+	vldr	d0, [r3, #752]
+	vldr	d1, [r3, #760]
+	vldr	d2, [r3, #768]
+	vldr	d3, [r3, #776]
+	vldr	d4, [r3, #784]
+	vldr	d5, [r3, #792]
+	vldr	d20, [r3, #800]
+	vldr	d21, [r3, #808]
+	vldr	d6, [r3, #816]
+	vldr	d7, [r3, #824]
+	vldr	d30, [r3, #832]
+	vldr	d31, [r3, #840]
+	vldr	d28, [r3, #848]
+	vldr	d29, [r3, #856]
+	vldr	d18, [r3, #864]
+	vldr	d19, [r3, #872]
+	vldr	d26, [r3, #880]
+	vldr	d27, [r3, #888]
+	vldr	d24, [r3, #896]
+	vldr	d25, [r3, #904]
+	vldr	d16, [r3, #912]
+	vldr	d17, [r3, #920]
 	movw	r3, #:lower16:.LANCHOR1
-	movw	r2, #26215
+	sub	sp, sp, #492
 	movt	r3, #:upper16:.LANCHOR1
-	str	r3, [sp, #28]
+	movw	r2, #26215
+	str	r3, [sp, #20]
 	mov	r3, #0
-	vstr	d22, [sp, #112]
-	vstr	d23, [sp, #120]
-	vstr	d20, [sp, #128]
-	vstr	d21, [sp, #136]
-	vstr	d18, [sp, #144]
-	vstr	d19, [sp, #152]
-	vstr	d16, [sp, #160]
-	vstr	d17, [sp, #168]
-	vstr	d24, [sp, #176]
-	vstr	d25, [sp, #184]
-	vstr	d26, [sp, #192]
-	vstr	d27, [sp, #200]
-	vstr	d28, [sp, #208]
-	vstr	d29, [sp, #216]
-	vstr	d30, [sp, #224]
-	vstr	d31, [sp, #232]
-	vstr	d6, [sp, #240]
-	vstr	d7, [sp, #248]
-	vstr	d4, [sp, #256]
-	vstr	d5, [sp, #264]
-	vstr	d2, [sp, #272]
-	vstr	d3, [sp, #280]
-	vstr	d0, [sp, #288]
-	vstr	d1, [sp, #296]
+	vstr	d22, [sp, #104]
+	vstr	d23, [sp, #112]
+	vstr	d0, [sp, #120]
+	vstr	d1, [sp, #128]
+	vstr	d2, [sp, #136]
+	vstr	d3, [sp, #144]
+	vstr	d4, [sp, #152]
+	vstr	d5, [sp, #160]
+	vstr	d20, [sp, #168]
+	vstr	d21, [sp, #176]
+	vstr	d6, [sp, #184]
+	vstr	d7, [sp, #192]
+	vstr	d30, [sp, #200]
+	vstr	d31, [sp, #208]
+	vstr	d28, [sp, #216]
+	vstr	d29, [sp, #224]
+	vstr	d18, [sp, #232]
+	vstr	d19, [sp, #240]
+	vstr	d26, [sp, #248]
+	vstr	d27, [sp, #256]
+	vstr	d24, [sp, #264]
+	vstr	d25, [sp, #272]
+	vstr	d16, [sp, #280]
+	vstr	d17, [sp, #288]
 	vmov.i32	q4, #0  @ ti
 	movt	r2, 26214
-	str	r2, [sp, #40]
-	str	r3, [sp, #44]
-.L178:
-	add	r0, sp, #240
+	str	r2, [sp, #32]
+	str	r3, [sp, #36]
+.L119:
+	add	r0, sp, #232
 	bl	max_off_diag
 	cmp	r0, #1000
-	ble	.L226
-	mov	r5, #0
-	mov	r7, r5
-	ldr	r3, [sp, #44]
-	add	fp, sp, #304
-	add	r8, sp, #368
+	ble	.L167
+	mov	r9, #0
+	ldr	r3, [sp, #36]
+	add	fp, sp, #296
+	add	r8, sp, #360
 	add	r3, r3, #1
-	str	fp, [sp, #16]
-	str	r8, [sp, #20]
-	str	r3, [sp, #44]
-	add	r10, sp, #64
-	add	r9, sp, #80
-.L206:
-	add	r3, r7, #1
-	mov	r6, r3
+	str	fp, [sp, #12]
+	str	r8, [sp, #16]
 	str	r3, [sp, #36]
-	ldr	r3, [sp, #20]
+	add	r10, sp, #72
+.L147:
+	add	r3, r9, #1
+	mov	r7, r3
+	str	r3, [sp, #28]
+	ldr	r3, [sp, #16]
 	vmov.i32	d10, #0  @ v2si
 	str	r3, [sp]
-	ldr	r3, [sp, #16]
+	ldr	r3, [sp, #12]
 	str	r3, [sp, #4]
-	mov	r3, r7
-	mov	r7, r6
-	mov	r6, r3
-.L205:
-	add	r3, sp, #48
-	cmp	r6, #1
+	mov	r3, r9
+	mov	r9, r7
+	mov	r7, r3
+.L146:
+	add	r3, sp, #40
+	cmp	r7, #1
 	vst1.64	{d8-d9}, [r3:64]
-	beq	.L179
-	cmp	r6, #2
-	beq	.L180
+	beq	.L120
 	cmp	r7, #2
-	vldr	d18, [sp, #240]
-	vldr	d19, [sp, #248]
-	beq	.L181
-	cmp	r7, #3
-	beq	.L182
-	vldr	d20, [sp, #256]
-	vldr	d21, [sp, #264]
+	beq	.L121
+	cmp	r9, #2
+	vldr	d18, [sp, #232]
+	vldr	d19, [sp, #240]
+	beq	.L122
+	cmp	r9, #3
+	beq	.L123
+	vldr	d20, [sp, #248]
+	vldr	d21, [sp, #256]
 	vmov.32	r2, d18[0]
 	vmov.32	r3, d20[0]
-	vldr	d17, [sp, #56]
-	vldr	d16, [sp, #48]
+	vldr	d17, [sp, #48]
+	vldr	d16, [sp, #40]
 	vmov.32	d17[0], r3
 	vmov.32	d16[0], r2
 	vmov.32	r3, d20[1]
 	vmov.32	r2, d18[1]
-.L230:
+.L171:
 	vmov.32	d16[1], r2
 	vmov.32	d17[1], r3
-	vstr	d16, [sp, #48]
-	vstr	d17, [sp, #56]
+	vstr	d16, [sp, #40]
+	vstr	d17, [sp, #48]
 	vmov	d18, d16  @ v2si
-.L183:
-	vldr	d16, [sp, #56]
-	vmov.32	r5, d18[0]
+.L124:
+	vldr	d16, [sp, #48]
+	vmov.32	r6, d18[0]
 	vmov.32	r3, d16[1]
-	subs	r2, r3, r5
-	add	r3, r5, r3
-	str	r3, [sp, #8]
-	vmov.32	r3, d18[1]
-	vmov.32	r4, d17[0]
-	mov	r5, r3
-	beq	.L186
-	add	r0, r3, r4
+	subs	r2, r3, r6
+	vmov.32	r4, d18[1]
+	add	r6, r6, r3
+	vmov.32	r5, d17[0]
+	beq	.L127
+	add	r0, r4, r5
 	asr	r1, r0, #31
 	lsl	r1, r1, #15
 	asr	r3, r2, #1
@@ -1222,131 +783,134 @@ main:
 	adc	r1, r1, r3, asr #31
 	asr	r3, r2, #31
 	bl	__aeabi_ldivmod
-	ldr	r3, [sp, #8]
-	str	r0, [sp, #32]
-	cmp	r3, #0
+	cmp	r6, #0
 	add	r3, r0, #32768
-	str	r3, [sp, #12]
-	bne	.L211
-	ldr	r3, [sp, #12]
+	str	r0, [sp, #24]
+	str	r3, [sp, #8]
+	bne	.L152
+	ldr	r3, [sp, #8]
 	movw	lr, #65535
 	cmp	r3, #65536
 	movw	r0, #32767
 	movwcs	r4, #32767
-	bcc	.L231
-.L188:
-	ldr	r2, .L238
-	mov	r3, #0
+	bcc	.L172
+.L129:
+	movw	r2, #:lower16:.LANCHOR0
+	movt	r2, #:upper16:.LANCHOR0
+	mov	r5, r2
 	mov	r1, r2
-	b	.L190
-.L233:
+	mov	r3, #0
+	b	.L131
+.L174:
 	add	r3, r3, #1
 	cmp	r3, #46
-	beq	.L232
-.L190:
+	beq	.L173
+.L131:
 	ldr	ip, [r1], #4
 	cmp	ip, r4
-	blt	.L233
+	blt	.L174
 	add	r3, r3, r3, lsl #2
-.L191:
+.L132:
 	cmp	lr, #65536
 	movwcs	r0, #32767
-	bcs	.L192
+	bcs	.L133
 	cmp	r0, #0
 	rsblt	r0, r0, #0
-.L192:
+.L133:
 	mov	r1, #0
-	b	.L194
-.L235:
+	b	.L135
+.L176:
 	add	r1, r1, #1
 	cmp	r1, #46
-	beq	.L234
-.L194:
+	beq	.L175
+.L135:
 	ldr	ip, [r2], #4
 	cmp	ip, r0
-	blt	.L235
+	blt	.L176
 	add	r1, r1, r1, lsl #2
-.L195:
+.L136:
 	add	r1, r3, r1
 	asr	r0, r1, #2
 	cmp	r0, #4
 	sub	r2, r3, r0
 	movle	r3, #1
-	ble	.L196
+	ble	.L137
 	cmp	r0, #49
 	movgt	r3, #9
-	ldrle	r3, [sp, #40]
+	ldrle	r3, [sp, #32]
 	asrle	r1, r1, #31
 	smullle	r0, r3, r3, r0
 	rsble	r3, r1, r3, asr #1
-.L196:
+.L137:
 	cmp	r2, #4
-	ble	.L217
+	ble	.L158
 	cmp	r2, #49
-	ble	.L236
+	ble	.L177
 	mov	r2, #9
-.L197:
+.L138:
+	add	r1, sp, #56
+	vst1.64	{d8-d9}, [r1:64]
 	vst1.64	{d8-d9}, [r10:64]
-	vst1.64	{d8-d9}, [r9:64]
-.L210:
-	vldr	d17, [sp, #80]
-	vldr	d16, [sp, #88]
-	ldr	ip, [sp, #24]
+.L151:
+	vldr	d17, [sp, #72]
+	vldr	d16, [sp, #80]
 	add	r3, r3, r3, lsl #1
-	add	r3, ip, r3, lsl #2
-	ldrd	r0, [r3, #4]
-	vldr	d18, [sp, #72]
-	vmov.32	d17[0], r1
-	vmov.32	d16[0], r0
+	add	r3, r5, r3, lsl #2
+	ldr	r0, [r3, #192]
+	ldr	r1, [r3, #188]
+	vldr	d18, [sp, #64]
+	vmov.32	d17[0], r0
+	vmov.32	d16[0], r1
 	vmov	d19, d10  @ v2si
 	add	r2, r2, r2, lsl #1
-	add	r2, ip, r2, lsl #2
-	rsb	r0, r0, #0
-	ldmib	r2, {r3, ip}
-	vmov.32	d17[1], r0
+	add	r5, r5, r2, lsl #2
+	ldr	ip, [r5, #192]
+	ldr	r3, [r5, #188]
+	rsb	r1, r1, #0
 	vmov.32	d19[0], ip
-	vmov.32	d16[1], r1
+	vmov.32	d17[1], r1
+	vmov.32	d16[1], r0
 	vmov.32	d18[0], r3
 	rsb	r3, r3, #0
 	vuzp.32	d17, d16
 	vmov.32	d19[1], r3
 	vmov.32	d18[1], ip
-	add	r2, sp, #96
-	add	r1, sp, #48
-	mov	r0, r10
-	vstr	d17, [sp, #80]
-	vstr	d16, [sp, #88]
-	vstr	d19, [sp, #64]
-	vstr	d18, [sp, #72]
+	add	r2, sp, #88
+	add	r1, sp, #40
+	add	r0, sp, #56
+	vstr	d17, [sp, #72]
+	vstr	d16, [sp, #80]
+	vstr	d19, [sp, #56]
+	vstr	d18, [sp, #64]
 	vst1.64	{d8-d9}, [r2:64]
 	bl	matrix_multiply
-	add	r2, sp, #48
-	mov	r1, r9
-	add	r0, sp, #96
+	add	r2, sp, #40
+	mov	r1, r10
+	add	r0, sp, #88
 	bl	matrix_multiply
-	vldr	d18, [sp, #80]
-	vldr	d19, [sp, #88]
+	vldr	d18, [sp, #72]
+	vldr	d19, [sp, #80]
 	vmov	d17, d18  @ v2si
 	vmov	d16, d19  @ v2si
-	ldr	r3, [sp, #28]
+	ldr	r3, [sp, #20]
 	vuzp.32	d17, d16
 	vldmia	r3, {d24-d31}
-	cmp	r6, #1
-	vstr	d17, [sp, #80]
-	vstr	d16, [sp, #88]
+	cmp	r7, #1
+	vstr	d17, [sp, #72]
+	vstr	d16, [sp, #80]
 	vstmia	fp, {d24-d31}
 	vstmia	r8, {d24-d31}
-	beq	.L198
-	cmp	r6, #2
-	beq	.L199
+	beq	.L139
 	cmp	r7, #2
-	vldr	d27, [r10, #8]
-	vldr	d26, [r9]
-	vldr	d25, [r9, #8]
-	vldr	d24, [r10]
-	beq	.L200
-	cmp	r7, #3
-	beq	.L201
+	beq	.L140
+	cmp	r9, #2
+	vldr	d27, [sp, #64]
+	vldr	d26, [r10]
+	vldr	d25, [r10, #8]
+	vldr	d24, [sp, #56]
+	beq	.L141
+	cmp	r9, #3
+	beq	.L142
 	vmov.32	r1, d27[0]
 	vldr	d18, [fp, #16]
 	vldr	d19, [fp, #24]
@@ -1375,16 +939,16 @@ main:
 	vstr	d20, [r8, #16]
 	vstr	d21, [r8, #24]
 	vst1.64	{d22-d23}, [fp:64]
-.L202:
-	vldr	d18, [sp, #176]
-	vldr	d19, [sp, #184]
-	vldr	d16, [sp, #192]
-	vldr	d17, [sp, #200]
-	vldr	d22, [sp, #208]
-	vldr	d23, [sp, #216]
+.L143:
+	vldr	d18, [sp, #168]
+	vldr	d19, [sp, #176]
+	vldr	d16, [sp, #184]
+	vldr	d17, [sp, #192]
+	vldr	d22, [sp, #200]
+	vldr	d23, [sp, #208]
 	vtrn.32	q9, q8
-	vldr	d20, [sp, #224]
-	vldr	d21, [sp, #232]
+	vldr	d20, [sp, #216]
+	vldr	d21, [sp, #224]
 	vmov	q1, q8  @ v4si
 	vmov	q8, q11  @ v4si
 	vtrn.32	q8, q10
@@ -1401,22 +965,22 @@ main:
 	vmov	d23, d17  @ v2si
 	vmov	d19, d20  @ v2si
 	vmov	d17, d1  @ v2si
-	add	r2, sp, #176
-	add	r3, sp, #432
+	add	r2, sp, #168
+	add	r3, sp, #424
 	mov	r1, r2
 	mov	r0, r8
 	vstmia	r3, {d24-d31}
-	vstr	d6, [sp, #176]
-	vstr	d7, [sp, #184]
-	vstr	d22, [sp, #208]
-	vstr	d23, [sp, #216]
-	vstr	d18, [sp, #192]
-	vstr	d19, [sp, #200]
-	vstr	d16, [sp, #224]
-	vstr	d17, [sp, #232]
+	vstr	d6, [sp, #168]
+	vstr	d7, [sp, #176]
+	vstr	d22, [sp, #200]
+	vstr	d23, [sp, #208]
+	vstr	d18, [sp, #184]
+	vstr	d19, [sp, #192]
+	vstr	d16, [sp, #216]
+	vstr	d17, [sp, #224]
 	bl	matrix_multiply_4x4
-	add	r2, sp, #432
-	add	r1, sp, #240
+	add	r2, sp, #424
+	add	r1, sp, #232
 	mov	r0, fp
 	bl	matrix_multiply_4x4
 	vld1.64	{d18-d19}, [r8:64]
@@ -1440,9 +1004,9 @@ main:
 	vmov	d19, d20  @ v2si
 	vmov	d16, d29  @ v2si
 	vmov	d17, d31  @ v2si
-	add	r2, sp, #240
+	add	r2, sp, #232
 	mov	r1, r8
-	add	r0, sp, #432
+	add	r0, sp, #424
 	vst1.64	{d24-d25}, [r8:64]
 	vstr	d22, [r8, #32]
 	vstr	d23, [r8, #40]
@@ -1472,7 +1036,7 @@ main:
 	vmov	d19, d20  @ v2si
 	vmov	d16, d29  @ v2si
 	vmov	d17, d31  @ v2si
-	add	r2, sp, #112
+	add	r2, sp, #104
 	mov	r1, fp
 	mov	r0, r2
 	vst1.64	{d24-d25}, [fp:64]
@@ -1484,33 +1048,33 @@ main:
 	vstr	d17, [fp, #56]
 	bl	matrix_multiply_4x4
 	ldr	r3, [sp, #4]
-	add	r7, r7, #1
+	add	r9, r9, #1
 	add	r3, r3, #16
 	str	r3, [sp, #4]
 	ldr	r3, [sp]
-	cmp	r7, #4
+	cmp	r9, #4
 	add	r3, r3, #16
 	str	r3, [sp]
-	bne	.L205
+	bne	.L146
 	mov	r0, #10
 	bl	putchar
+	ldr	r3, [sp, #12]
+	ldr	r9, [sp, #28]
+	add	r3, r3, #16
+	str	r3, [sp, #12]
 	ldr	r3, [sp, #16]
-	ldr	r7, [sp, #36]
+	cmp	r9, #3
 	add	r3, r3, #16
 	str	r3, [sp, #16]
-	ldr	r3, [sp, #20]
-	cmp	r7, #3
-	add	r3, r3, #16
-	str	r3, [sp, #20]
-	bne	.L206
+	bne	.L147
 	movw	r0, #:lower16:.LC2
-	ldr	r1, [sp, #44]
+	ldr	r1, [sp, #36]
 	movt	r0, #:upper16:.LC2
 	movw	r5, #:lower16:.LC3
 	bl	printf
-	add	r4, sp, #240
+	add	r4, sp, #232
 	movt	r5, #:upper16:.LC3
-.L207:
+.L148:
 	vld1.64	{d16-d17}, [r4:64]
 	mov	r0, r5
 	vmov.32	r1, d16[0]
@@ -1532,76 +1096,75 @@ main:
 	mov	r0, #10
 	bl	putchar
 	cmp	fp, r4
-	bne	.L207
+	bne	.L148
 	mov	r0, #10
 	bl	putchar
-	ldr	r3, [sp, #44]
+	ldr	r3, [sp, #36]
 	cmp	r3, #20
-	bne	.L178
-.L226:
+	bne	.L119
+.L167:
 	mov	r0, #0
-	add	sp, sp, #500
+	add	sp, sp, #492
 	@ sp needed
 	vldm	sp!, {d8-d10}
 	pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
-.L217:
+.L158:
 	mov	r2, #1
-	b	.L197
-.L219:
+	b	.L138
+.L160:
 	movw	r3, #65535
-	str	r3, [sp, #12]
+	str	r3, [sp, #8]
 	movw	r3, #32767
-	str	r3, [sp, #32]
-.L211:
-	sub	r2, r4, r5
-	ldr	ip, [sp, #8]
+	str	r3, [sp, #24]
+.L152:
+	sub	r2, r5, r4
 	asr	r3, r2, #31
 	lsl	r3, r3, #15
-	asr	r0, ip, #1
 	orr	r3, r3, r2, lsr #17
+	asr	r0, r6, #1
 	lsl	r2, r2, #15
 	adds	r4, r2, r0
 	adc	r5, r3, r0, asr #31
 	mov	r1, r5
 	mov	r0, r4
-	asr	r3, ip, #31
-	mov	r2, ip
+	asr	r3, r6, #31
+	mov	r2, r6
 	bl	__aeabi_ldivmod
-	ldr	r3, [sp, #12]
+	ldr	r3, [sp, #8]
 	add	lr, r0, #32768
 	cmp	r3, #65536
 	movwcs	r4, #32767
-	bcs	.L188
-.L231:
-	ldr	r4, [sp, #32]
+	bcs	.L129
+.L172:
+	ldr	r4, [sp, #24]
 	cmp	r4, #0
 	rsblt	r4, r4, #0
-	b	.L188
-.L186:
-	ldr	r3, [sp, #8]
-	cmp	r3, #0
-	bne	.L219
+	b	.L129
+.L127:
+	cmp	r6, #0
+	bne	.L160
 	movw	r4, #32767
 	movw	lr, #65535
 	mov	r0, r4
-	b	.L188
-.L236:
-	ldr	r1, [sp, #40]
+	b	.L129
+.L177:
+	add	r1, sp, #56
+	vst1.64	{d8-d9}, [r1:64]
+	ldr	r1, [sp, #32]
 	vst1.64	{d8-d9}, [r10:64]
 	smull	r0, r1, r1, r2
 	asr	r2, r2, #31
-	vst1.64	{d8-d9}, [r9:64]
 	rsb	r2, r2, r1, asr #1
-	b	.L210
-.L234:
+	b	.L151
+.L175:
 	mvn	r1, #4
-	b	.L195
-.L232:
+	b	.L136
+.L173:
 	mvn	r3, #4
-	b	.L191
-.L199:
-	vldr	d21, [r10]
-	vldr	d20, [r9]
+	b	.L132
+.L140:
+	vldr	d21, [sp, #56]
+	vldr	d20, [r10]
 	vmov.32	r2, d21[0]
 	vldr	d18, [fp, #32]
 	vldr	d19, [fp, #40]
@@ -1616,10 +1179,10 @@ main:
 	vmov.32	d17[1], r3
 	vstr	d18, [fp, #32]
 	vstr	d19, [fp, #40]
-	vldr	d21, [r10, #8]
+	vldr	d21, [sp, #64]
 	vstr	d16, [r8, #32]
 	vstr	d17, [r8, #40]
-	vldr	d20, [r9, #8]
+	vldr	d20, [r10, #8]
 	ldr	r1, [sp, #4]
 	ldr	r0, [sp]
 	vldr	d18, [r1, #16]
@@ -1638,16 +1201,16 @@ main:
 	vstr	d19, [r1, #24]
 	vstr	d16, [r0, #16]
 	vstr	d17, [r0, #24]
-	b	.L202
-.L198:
-	cmp	r7, #2
-	beq	.L203
-	cmp	r7, #3
-	bne	.L202
-	vldr	d27, [r10]
-	vldr	d26, [r10, #8]
-	vldr	d25, [r9]
-	vldr	d24, [r9, #8]
+	b	.L143
+.L139:
+	cmp	r9, #2
+	beq	.L144
+	cmp	r9, #3
+	bne	.L143
+	vldr	d27, [sp, #56]
+	vldr	d26, [sp, #64]
+	vldr	d25, [r10]
+	vldr	d24, [r10, #8]
 	vmov.32	r0, d27[0]
 	vldr	d18, [fp, #16]
 	vldr	d19, [fp, #24]
@@ -1680,75 +1243,75 @@ main:
 	vstr	d21, [r8, #24]
 	vstr	d22, [r8, #48]
 	vstr	d23, [r8, #56]
-	b	.L202
-.L180:
-	add	r3, sp, #240
-	add	r3, r3, r7, lsl #4
+	b	.L143
+.L121:
+	add	r3, sp, #232
+	add	r3, r3, r9, lsl #4
 	vld1.64	{d20-d21}, [r3:64]
-	vldr	d18, [sp, #272]
-	vldr	d19, [sp, #280]
+	vldr	d18, [sp, #264]
+	vldr	d19, [sp, #272]
 	vmov.32	r2, d21[0]
-	vldr	d17, [sp, #56]
-	vldr	d16, [sp, #48]
+	vldr	d17, [sp, #48]
+	vldr	d16, [sp, #40]
 	vmov.32	r3, d19[0]
-.L229:
+.L170:
 	vmov.32	d17[0], r2
 	vmov.32	d16[0], r3
 	vmov.32	r2, d21[1]
 	vmov.32	r3, d19[1]
 	vmov.32	d17[1], r2
 	vmov.32	d16[1], r3
-	vstr	d17, [sp, #56]
-	vstr	d16, [sp, #48]
+	vstr	d17, [sp, #48]
+	vstr	d16, [sp, #40]
 	vmov	d18, d16  @ v2si
-	b	.L183
-.L179:
-	cmp	r7, #2
-	beq	.L184
-	cmp	r7, #3
-	bne	.L237
-	vldr	d20, [sp, #256]
-	vldr	d21, [sp, #264]
-	vldr	d18, [sp, #288]
-	vldr	d19, [sp, #296]
+	b	.L124
+.L120:
+	cmp	r9, #2
+	beq	.L125
+	cmp	r9, #3
+	bne	.L178
+	vldr	d20, [sp, #248]
+	vldr	d21, [sp, #256]
+	vldr	d18, [sp, #280]
+	vldr	d19, [sp, #288]
 	vmov.32	r2, d20[1]
 	vmov.32	r3, d18[1]
-	vldr	d16, [sp, #48]
-	vldr	d17, [sp, #56]
+	vldr	d16, [sp, #40]
+	vldr	d17, [sp, #48]
 	vmov.32	d16[0], r2
 	vmov.32	d17[0], r3
 	vmov.32	r2, d21[1]
 	vmov.32	r3, d19[1]
-.L228:
+.L169:
 	vmov.32	d16[1], r2
 	vmov.32	d17[1], r3
-	vstr	d16, [sp, #48]
-	vstr	d17, [sp, #56]
+	vstr	d16, [sp, #40]
+	vstr	d17, [sp, #48]
 	vmov	d18, d16  @ v2si
-	b	.L183
-.L237:
+	b	.L124
+.L178:
 	vmov.i32	d17, #0  @ v2si
-	vldr	d18, [sp, #48]
-	b	.L183
-.L184:
-	vldr	d20, [sp, #256]
-	vldr	d21, [sp, #264]
-	vldr	d18, [sp, #272]
-	vldr	d19, [sp, #280]
+	vldr	d18, [sp, #40]
+	b	.L124
+.L125:
+	vldr	d20, [sp, #248]
+	vldr	d21, [sp, #256]
+	vldr	d18, [sp, #264]
+	vldr	d19, [sp, #272]
 	vmov.32	r2, d20[1]
 	vmov.32	r3, d18[1]
-	vldr	d16, [sp, #48]
-	vldr	d17, [sp, #56]
+	vldr	d16, [sp, #40]
+	vldr	d17, [sp, #48]
 	vmov.32	d16[0], r2
 	vmov.32	d17[0], r3
 	vmov.32	r2, d21[0]
 	vmov.32	r3, d19[0]
-	b	.L228
-.L203:
-	vldr	d27, [r10]
-	vldr	d26, [r10, #8]
-	vldr	d25, [r9]
-	vldr	d24, [r9, #8]
+	b	.L169
+.L144:
+	vldr	d27, [sp, #56]
+	vldr	d26, [sp, #64]
+	vldr	d25, [r10]
+	vldr	d24, [r10, #8]
 	vmov.32	r0, d27[0]
 	vldr	d18, [fp, #16]
 	vldr	d19, [fp, #24]
@@ -1781,8 +1344,8 @@ main:
 	vstr	d21, [r8, #24]
 	vstr	d22, [r8, #32]
 	vstr	d23, [r8, #40]
-	b	.L202
-.L201:
+	b	.L143
+.L142:
 	vmov.32	r0, d27[0]
 	vldr	d18, [fp, #48]
 	vldr	d19, [fp, #56]
@@ -1811,8 +1374,8 @@ main:
 	vstr	d20, [r8, #48]
 	vstr	d21, [r8, #56]
 	vst1.64	{d22-d23}, [fp:64]
-	b	.L202
-.L200:
+	b	.L143
+.L141:
 	vmov.32	r1, d27[0]
 	vldr	d18, [fp, #32]
 	vldr	d19, [fp, #40]
@@ -1841,34 +1404,28 @@ main:
 	vstr	d20, [r8, #32]
 	vstr	d21, [r8, #40]
 	vst1.64	{d22-d23}, [fp:64]
-	b	.L202
-.L182:
-	vldr	d20, [sp, #288]
-	vldr	d21, [sp, #296]
-	vldr	d17, [sp, #56]
+	b	.L143
+.L123:
+	vldr	d20, [sp, #280]
+	vldr	d21, [sp, #288]
+	vldr	d17, [sp, #48]
 	vmov.32	r2, d20[0]
-	vldr	d16, [sp, #48]
+	vldr	d16, [sp, #40]
 	vmov.32	r3, d18[0]
-	b	.L229
-.L181:
-	vldr	d20, [sp, #272]
-	vldr	d21, [sp, #280]
+	b	.L170
+.L122:
+	vldr	d20, [sp, #264]
+	vldr	d21, [sp, #272]
 	vmov.32	r2, d18[0]
 	vmov.32	r3, d20[0]
-	vldr	d17, [sp, #56]
-	vldr	d16, [sp, #48]
+	vldr	d17, [sp, #48]
+	vldr	d16, [sp, #40]
 	vmov.32	d17[0], r3
 	vmov.32	d16[0], r2
 	vmov.32	r3, d21[0]
 	vmov.32	r2, d19[0]
-	b	.L230
-.L239:
-	.align	2
-.L238:
-	.word	.LANCHOR0+552
+	b	.L171
 	.size	main, .-main
-	.comm	rot_left,8,8
-	.comm	rot_right,8,8
 	.global	ARCTAN_VALS
 	.global	trig_table
 	.global	vt_4
@@ -1883,10 +1440,58 @@ main:
 	.global	m_3
 	.global	m_2
 	.global	m_1
-	.comm	f,4,4
 	.data
 	.align	3
 	.set	.LANCHOR0,. + 0
+	.type	ARCTAN_VALS, %object
+	.size	ARCTAN_VALS, 184
+ARCTAN_VALS:
+	.word	0
+	.word	572
+	.word	1144
+	.word	1716
+	.word	2289
+	.word	2862
+	.word	3436
+	.word	4010
+	.word	4585
+	.word	5161
+	.word	5738
+	.word	6316
+	.word	6895
+	.word	7475
+	.word	8056
+	.word	8639
+	.word	9223
+	.word	9808
+	.word	10394
+	.word	10982
+	.word	11571
+	.word	12162
+	.word	12754
+	.word	13348
+	.word	13943
+	.word	14540
+	.word	15138
+	.word	15738
+	.word	16340
+	.word	16943
+	.word	17548
+	.word	18155
+	.word	18763
+	.word	19373
+	.word	19985
+	.word	20598
+	.word	21213
+	.word	21830
+	.word	22448
+	.word	23068
+	.word	23690
+	.word	24313
+	.word	24938
+	.word	25565
+	.word	26193
+	.word	32767
 	.type	trig_table, %object
 	.size	trig_table, 552
 trig_table:
@@ -2028,55 +1633,6 @@ trig_table:
 	.word	45
 	.word	24885
 	.word	25872
-	.type	ARCTAN_VALS, %object
-	.size	ARCTAN_VALS, 184
-ARCTAN_VALS:
-	.word	0
-	.word	572
-	.word	1144
-	.word	1716
-	.word	2289
-	.word	2862
-	.word	3436
-	.word	4010
-	.word	4585
-	.word	5161
-	.word	5738
-	.word	6316
-	.word	6895
-	.word	7475
-	.word	8056
-	.word	8639
-	.word	9223
-	.word	9808
-	.word	10394
-	.word	10982
-	.word	11571
-	.word	12162
-	.word	12754
-	.word	13348
-	.word	13943
-	.word	14540
-	.word	15138
-	.word	15738
-	.word	16340
-	.word	16943
-	.word	17548
-	.word	18155
-	.word	18763
-	.word	19373
-	.word	19985
-	.word	20598
-	.word	21213
-	.word	21830
-	.word	22448
-	.word	23068
-	.word	23690
-	.word	24313
-	.word	24938
-	.word	25565
-	.word	26193
-	.word	32767
 	.type	u_1, %object
 	.size	u_1, 16
 u_1:
