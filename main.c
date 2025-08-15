@@ -573,8 +573,31 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
+			
 			int32x4_t M_prime[4] = {{}, {}, {}, {}};
-			transpose_32x4(VT);
+			int32x4_t aa;
+		    int32x4_t bb;
+		    int32x4_t cc;
+		    int32x4_t dd;
+				
+			// Transpose VT
+			int32x4x2_t temp_VT;
+		    temp_VT = vtrnq_s32(VT[0], VT[1]);
+		    VT[0] = temp_VT.val[0];
+		    VT[1] = temp_VT.val[1];
+		    temp_VT = vtrnq_s32(VT[2], VT[3]);
+		    VT[3] = temp_VT.val[0];
+		    VT[4] = temp_VT.val[1];
+		    aa = vcombine_s32(vget_low_s32(VT[0]), vget_low_s32(VT[2]));
+		    bb = vcombine_s32(vget_low_s32(VT[1]), vget_low_s32(VT[3]));
+		    cc = vcombine_s32(vget_high_s32(VT[0]), vget_high_s32(VT[2]));
+		    dd = vcombine_s32(vget_high_s32(VT[1]), vget_high_s32(VT[3]));
+			VT[0] = aa;
+			VT[1] = bb;
+			VT[2] = cc;
+			VT[3] = dd;
+			//transpose_32x4(VT);
+			
 			printf("Matrix VT after transpose:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
@@ -588,6 +611,7 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
+			
 			matrix_multiply_4x4(VT_prime, VT, VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
@@ -602,10 +626,47 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
+			
 			matrix_multiply_4x4(U_prime, M, M_prime);
-			transpose_32x4(VT_prime);
+
+			// Transpose VT_prime
+			int32x4x2_t temp_VT_prime;
+		    temp_VT_prime = vtrnq_s32(VT_prime[0], VT_prime[1]);
+		    VT_prime[0] = temp_VT_prime.val[0];
+		    VT_prime[1] = temp_VT_prime.val[1];
+		    temp_VT_prime = vtrnq_s32(VT_prime[2], VT_prime[3]);
+		    VT_prime[3] = temp_VT_prime.val[0];
+		    VT_prime[4] = temp_VT_prime.val[1];
+		    aa = vcombine_s32(vget_low_s32(VT_prime[0]), vget_low_s32(VT_prime[2]));
+		    bb = vcombine_s32(vget_low_s32(VT_prime[1]), vget_low_s32(VT_prime[3]));
+		    cc = vcombine_s32(vget_high_s32(VT_prime[0]), vget_high_s32(VT_prime[2]));
+		    dd = vcombine_s32(vget_high_s32(VT_prime[1]), vget_high_s32(VT_prime[3]));
+			VT_prime[0] = aa;
+			VT_prime[1] = bb;
+			VT_prime[2] = cc;
+			VT_prime[3] = dd;
+			//transpose_32x4(VT_prime);
+			
 			matrix_multiply_4x4(M_prime, VT_prime, M);
-			transpose_32x4(U_prime);
+
+			// Transpose U_prime
+			int32x4x2_t temp_U_prime;
+		    temp_U_prime = vtrnq_s32(U_prime[0], U_prime[1]);
+		    U_prime[0] = temp_U_prime.val[0];
+		    U_prime[1] = temp_U_prime.val[1];
+		    temp_U_prime = vtrnq_s32(U_prime[2], U_prime[3]);
+		    U_prime[3] = temp_U_prime.val[0];
+		    U_prime[4] = temp_U_prime.val[1];
+		    aa = vcombine_s32(vget_low_s32(U_prime[0]), vget_low_s32(U_prime[2]));
+		    bb = vcombine_s32(vget_low_s32(U_prime[1]), vget_low_s32(U_prime[3]));
+		    cc = vcombine_s32(vget_high_s32(U_prime[0]), vget_high_s32(U_prime[2]));
+		    dd = vcombine_s32(vget_high_s32(U_prime[1]), vget_high_s32(U_prime[3]));
+			U_prime[0] = aa;
+			U_prime[1] = bb;
+			U_prime[2] = cc;
+			U_prime[3] = dd;
+			//transpose_32x4(U_prime);
+			
 			matrix_multiply_4x4(U, U_prime, U);
     	}
     	printf("\n");
