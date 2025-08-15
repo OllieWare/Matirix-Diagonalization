@@ -31,7 +31,7 @@ int32x4_t vt_4 = {0,0,0,32767};
 #define ANGLE_90    32767
 
 // Constants for Diagonalization sweeps
-#define MAX_SWEEPS 			  	5
+#define MAX_SWEEPS 			  	20
 #define CONVERGENCE_THRESHOLD 	100
 
 // Structure to hold sin and cos values
