@@ -611,8 +611,9 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
-			
-			matrix_multiply_4x4(VT_prime, VT, VT);
+
+			int32x4_t VT_copy[4] = VT
+			matrix_multiply_4x4(VT_prime, VT_copy, VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
