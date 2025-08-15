@@ -338,7 +338,10 @@ void transpose_32x2x2(int32x4_t* M) {
 
 void transpose_32x4(int32x4_t* M) {
     transpose_32x2x2(M);
-    transpose_32x2x2(M+2); 
+	int32x4_t temp[2] = {M[2], M[3]};
+    transpose_32x2x2(temp);
+	M[2] = temp[2];
+	M[3] = temp[3];
     transpose_32x4x4(M);
 }
 
