@@ -288,15 +288,15 @@ void rotate(int32x2_t* N, int32x4_t* M, int32x4_t* U, int32x4_t* VT) {
     //printf("sum_tan: %d \n",sum);
     //printf("dif_tan: %d \n",dif);
     int theta_r = (sum + dif) >> 2;
-    printf("R_Angle %d \n",theta_r);
+    //printf("R_Angle %d \n",theta_r);
     int theta_l = sum - theta_r;
-    printf("L_Angle %d \n",theta_l);
+    //printf("L_Angle %d \n",theta_l);
 	theta_r = theta_r / 5;
 	theta_l = theta_l / 5;
     if(theta_r<=-9){theta_r=-9;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
     if(theta_l<=-9){theta_l=-9; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
-    printf("R_Index %d \n",theta_r);
-    printf("L_Index %d \n",theta_l);
+    //printf("R_Index %d \n",theta_r);
+    //printf("L_Index %d \n",theta_l);
     int32x2_t R_L[2] = { {}, {} };
     int32x2_t R_R[2] = { {}, {} };
     get_rotatation(R_L, theta_l, 0);
@@ -439,6 +439,7 @@ int main() {
 	    		}
 				int k;
 				int l;
+				/*
 				for(k=0;k<2;k++){
 	        		for(l=0;l<2;l++) {
 	           			switch(l) {
@@ -449,6 +450,7 @@ int main() {
 					printf("\n");
 				}
 				printf("\n");
+				*/
 				// Rotate the 2x2 Matrix
 				int32_t a = vget_lane_s32(temp[1], 0);
 			    int32_t b = vget_lane_s32(temp[0], 1);
@@ -477,15 +479,15 @@ int main() {
 			    //printf("sum_tan: %d \n",sum);
 			    //printf("dif_tan: %d \n",dif);
 			    int theta_r = (sum + dif) >> 2;
-			    printf("R_Angle %d \n",theta_r);
+			    //printf("R_Angle %d \n",theta_r);
 			    int theta_l = sum - theta_r;
-			    printf("L_Angle %d \n",theta_l);
+			    //printf("L_Angle %d \n",theta_l);
 				theta_r = theta_r / 5;
 				theta_l = theta_l / 5;
 			    if(theta_r<=0){theta_r=1;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
 			    if(theta_l<=0){theta_l=1; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
-			    printf("R_Index %d \n",theta_r);
-			    printf("L_Index %d \n",theta_l);
+			    //printf("R_Index %d \n",theta_r);
+			   // printf("L_Index %d \n",theta_l);
 			    int32x2_t R_L[2] = { {}, {} };
 			    int32x2_t R_R[2] = { {}, {} };
 			    get_rotatation(R_L, theta_l, 0);
@@ -587,6 +589,7 @@ int main() {
 						VT_prime[j] = vsetq_lane_s32(vget_lane_s32(R_R[1],1),VT_prime[j], 3);
 						break;
 				}
+				/*
 				printf("Matrix U_prime:\n");
 				for(k=0;k<4;k++){
 	        		for(l=0;l<4;l++) {
@@ -600,19 +603,20 @@ int main() {
 					printf("\n");
 				}
 				printf("\n");
-				printf("Matrix VT_primeT:\n");
-				for(k=0;k<4;k++){
-	        		for(l=0;l<4;l++) {
-	           			switch(l) {
-	           				case 0: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 0)); break;
-	           				case 1: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 1)); break;
-							case 2: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 2)); break;
-	           				case 3: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 3)); break;
-	           			}
-					}
-					printf("\n");
-				}
-				printf("\n");
+				*/
+				// printf("Matrix VT_primeT:\n");
+				// for(k=0;k<4;k++){
+	   //      		for(l=0;l<4;l++) {
+	   //         			switch(l) {
+	   //         				case 0: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 0)); break;
+	   //         				case 1: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 1)); break;
+				// 			case 2: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 2)); break;
+	   //         				case 3: printf("%.2d ", vgetq_lane_s32(VT_prime[k], 3)); break;
+	   //         			}
+				// 	}
+				// 	printf("\n");
+				// }
+				// printf("\n");
 				
 				int32x4_t M_prime[4] = {{}, {}, {}, {}};
 				int32x4_t aa;
@@ -639,34 +643,34 @@ int main() {
 				VT[3] = dd;
 				//transpose_32x4(VT);
 				
-				printf("Matrix VT after transpose:\n");
-				for(k=0;k<4;k++){
-	        		for(l=0;l<4;l++) {
-	           			switch(l) {
-	           				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
-	           				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
-							case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
-	           				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
-	           			}
-					}
-					printf("\n");
-				}
-				printf("\n");
+				// printf("Matrix VT after transpose:\n");
+				// for(k=0;k<4;k++){
+	   //      		for(l=0;l<4;l++) {
+	   //         			switch(l) {
+	   //         				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
+	   //         				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
+				// 			case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
+	   //         				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
+	   //         			}
+				// 	}
+				// 	printf("\n");
+				// }
+				// printf("\n");
 				
 				matrix_multiply_4x4(VT_prime, VT, VT);
-				printf("Matrix VT after mult:\n");
-				for(k=0;k<4;k++){
-	        		for(l=0;l<4;l++) {
-	           			switch(l) {
-	           				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
-	           				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
-							case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
-	           				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
-	           			}
-					}
-					printf("\n");
-				}
-				printf("\n");
+				// printf("Matrix VT after mult:\n");
+				// for(k=0;k<4;k++){
+	   //      		for(l=0;l<4;l++) {
+	   //         			switch(l) {
+	   //         				case 0: printf("%.2d ", vgetq_lane_s32(VT[k], 0)); break;
+	   //         				case 1: printf("%.2d ", vgetq_lane_s32(VT[k], 1)); break;
+				// 			case 2: printf("%.2d ", vgetq_lane_s32(VT[k], 2)); break;
+	   //         				case 3: printf("%.2d ", vgetq_lane_s32(VT[k], 3)); break;
+	   //         			}
+				// 	}
+				// 	printf("\n");
+				// }
+				// printf("\n");
 				
 				matrix_multiply_4x4(U_prime, M, M_prime);
 	
