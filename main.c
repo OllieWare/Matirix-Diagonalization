@@ -108,8 +108,8 @@ void set_rotation(int16_t angle_category) {
 int32_t arctan(int32_t val,  int* flag) {
 	int i;
         *flag=0;
-	if (abs(val) > 32767) {
-		val = 65534 - val;
+	if (val > 32767 || val<-32768) {
+		val = 32767;
 		*flag=1; // to show 90-Theta needed
 	}
 	for (i = 0; i < 10; ++i) {
