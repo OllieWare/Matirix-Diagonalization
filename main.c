@@ -353,8 +353,8 @@ void rotate(int32x2_t* N, int32x4_t* M, int32x4_t* U, int32x4_t* VT) {
 
     int sum_mirror;
     int dif_mirror;
-    sum = arctan(sum,&sum_mirror) * 5;
-    dif = arctan(dif,&dif_mirror) * 5;
+    sum = arctan(sum,&sum_mirror);
+    dif = arctan(dif,&dif_mirror);
     int mirror_L=sum_mirror;
     int mirror_R=(sum_mirror+dif_mirror);
     //printf("sum_tan: %d \n",sum);
@@ -363,10 +363,10 @@ void rotate(int32x2_t* N, int32x4_t* M, int32x4_t* U, int32x4_t* VT) {
     //printf("R_Angle %d \n",theta_r);
     int theta_l = sum - theta_r;
     //printf("L_Angle %d \n",theta_l);
-	theta_r = theta_r / 5;
-	theta_l = theta_l / 5;
-    if(theta_r<=-9){theta_r=-9;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
-    if(theta_l<=-9){theta_l=-9; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
+	theta_r = theta_r;
+	theta_l = theta_l;
+    if(theta_r<=-45){theta_r=-45;mirror_L++;}else if(theta_r>45){theta_r=45; mirror_R++;}
+    if(theta_l<=-45){theta_l=-45; mirror_L++;}else if(theta_l>45){theta_l=45; mirror_L++;}
     //printf("R_Index %d \n",theta_r);
     //printf("L_Index %d \n",theta_l);
     int32x2_t R_L[2] = { {}, {} };
