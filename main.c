@@ -349,26 +349,26 @@ int main() {
 				
 			    int sum_mirror;
 			    int dif_mirror;
-			    sum = arctan(sum,&sum_mirror) * 5;
-			    dif = arctan(dif,&dif_mirror) * 5;
+			    sum = arctan(sum,&sum_mirror);
+			    dif = arctan(dif,&dif_mirror);
 			    int mirror_L=sum_mirror;
 			    int mirror_R=(sum_mirror+dif_mirror);
 			    int theta_r = (sum + dif) >> 2;
 			    int theta_l = sum - theta_r;
-				theta_r = theta_r / 5;
-				theta_l = theta_l / 5;
+				theta_r = theta_r;
+				theta_l = theta_l;
 			    if (theta_r<=0) {
 					theta_r=1;
 					mirror_L++;
-				} else if (theta_r>9) {
-					theta_r=9;
+				} else if (theta_r>45) {
+					theta_r=45;
 					mirror_R++;
 				}
 			    if (theta_l<=0) {
 					theta_l=1;
 					mirror_L++;
-				} else if (theta_l>9) {
-					theta_l=9;
+				} else if (theta_l>45) {
+					theta_l=45;
 					mirror_L++;
 				}
 
