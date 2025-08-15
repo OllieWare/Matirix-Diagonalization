@@ -712,7 +712,7 @@ int main() {
 	    	}
 	    	printf("\n");
 	    }
-		printf("Sweep %d of Matrix M:\n", sweep_count + 1);
+		printf("Sweep %d of Matrix M:\n", sweep_count);
 		int k;
 		int l;
 		for(k=0;k<4;k++){
