@@ -579,6 +579,7 @@ int main() {
 		    int32x4_t bb;
 		    int32x4_t cc;
 		    int32x4_t dd;
+			int n;
 				
 			// Transpose VT
 			int32x4x2_t temp_VT;
@@ -612,10 +613,10 @@ int main() {
 			}
 			printf("\n");
 
-			int32x4_t VT_copy[4] = {};
-			for (k=0; k<4; k++) {
-				VT_copy[k] = VT[k];
-			}
+		    n = sizeof(VT) / sizeof(VT[0]);
+		    int32x4_t VT_copy[n];
+		    memcpy(VT_copy, VT, n * sizeof(VT[0]));
+			
 			matrix_multiply_4x4(VT_prime, VT_copy, VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
