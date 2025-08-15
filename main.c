@@ -3,7 +3,6 @@
 #include <arm_neon.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <>
 
 FILE* f;
 // Matrix M
