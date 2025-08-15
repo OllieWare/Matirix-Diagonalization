@@ -30,6 +30,10 @@ int32x4_t vt_4 = {0,0,0,32767};
 #define ANGLE_67    24576
 #define ANGLE_90    32767
 
+// Constants for Diagonalization sweeps
+#define MAX_SWEEPS 			  	5
+#define CONVERGENCE_THRESHOLD 	100
+
 // Structure to hold sin and cos values
 typedef struct {
     int32_t angle_deg;
@@ -349,6 +353,25 @@ void transpose_32x4(int32x4_t* M) {
     transpose_32x4x4(M);
 }
 
+int32_t max_off_diag(int32x4_t* M) {
+    int32_t max_val = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (i != j) {
+				int32_t val;
+				switch(j) {
+					case 0: val = abs(vgetq_lane_s32(M[i], 0)); break;
+					case 1: val = abs(vgetq_lane_s32(M[i], 1)); break;
+					case 2: val = abs(vgetq_lane_s32(M[i], 2)); break;
+					case 3: val = abs(vgetq_lane_s32(M[i], 3)); break;
+				}
+                if (val > max_val) max_val = val;
+            }
+        }
+    }
+    return max_val;
+}
+
 int main() {
     // f = fopen("matrix.txt", "r");
     // if ((f == NULL)) {
@@ -360,9 +383,9 @@ int main() {
     int32x4_t U[4] = {u_1, u_2, u_3, u_4};
     int32x4_t VT[4] = {vt_1, vt_2, vt_3, vt_4};
     int32x4_t M[4] = {m_1, m_2, m_3, m_4};
-	int N = 5; // The number of sweeps
-	int n;
-	for (n=0; n < N; n++) {
+	int sweep_count = 0;
+	while (sweep_count < MAX_SWEEPS && max_off_diag(M) > CONVERGENCE_THRESHOLD) {
+		sweep_count++;
 	    int i;
 	    int j;
 	    for (i = 0; i < 3; i++){
@@ -689,7 +712,7 @@ int main() {
 	    	}
 	    	printf("\n");
 	    }
-		printf("Sweep %d of Matrix M:\n", n);
+		printf("Sweep %d of Matrix M:\n", sweep_count + 1);
 		int k;
 		int l;
 		for(k=0;k<4;k++){
