@@ -586,8 +586,8 @@ int main() {
 		    VT[0] = temp_VT.val[0];
 		    VT[1] = temp_VT.val[1];
 		    temp_VT = vtrnq_s32(VT[2], VT[3]);
-		    VT[3] = temp_VT.val[0];
-		    VT[4] = temp_VT.val[1];
+		    VT[2] = temp_VT.val[0];
+		    VT[3] = temp_VT.val[1];
 		    aa = vcombine_s32(vget_low_s32(VT[0]), vget_low_s32(VT[2]));
 		    bb = vcombine_s32(vget_low_s32(VT[1]), vget_low_s32(VT[3]));
 		    cc = vcombine_s32(vget_high_s32(VT[0]), vget_high_s32(VT[2]));
@@ -635,8 +635,8 @@ int main() {
 		    VT_prime[0] = temp_VT_prime.val[0];
 		    VT_prime[1] = temp_VT_prime.val[1];
 		    temp_VT_prime = vtrnq_s32(VT_prime[2], VT_prime[3]);
-		    VT_prime[3] = temp_VT_prime.val[0];
-		    VT_prime[4] = temp_VT_prime.val[1];
+		    VT_prime[2] = temp_VT_prime.val[0];
+		    VT_prime[3] = temp_VT_prime.val[1];
 		    aa = vcombine_s32(vget_low_s32(VT_prime[0]), vget_low_s32(VT_prime[2]));
 		    bb = vcombine_s32(vget_low_s32(VT_prime[1]), vget_low_s32(VT_prime[3]));
 		    cc = vcombine_s32(vget_high_s32(VT_prime[0]), vget_high_s32(VT_prime[2]));
@@ -655,8 +655,8 @@ int main() {
 		    U_prime[0] = temp_U_prime.val[0];
 		    U_prime[1] = temp_U_prime.val[1];
 		    temp_U_prime = vtrnq_s32(U_prime[2], U_prime[3]);
-		    U_prime[3] = temp_U_prime.val[0];
-		    U_prime[4] = temp_U_prime.val[1];
+		    U_prime[2] = temp_U_prime.val[0];
+		    U_prime[3] = temp_U_prime.val[1];
 		    aa = vcombine_s32(vget_low_s32(U_prime[0]), vget_low_s32(U_prime[2]));
 		    bb = vcombine_s32(vget_low_s32(U_prime[1]), vget_low_s32(U_prime[3]));
 		    cc = vcombine_s32(vget_high_s32(U_prime[0]), vget_high_s32(U_prime[2]));
