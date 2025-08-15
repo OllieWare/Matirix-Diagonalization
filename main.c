@@ -32,7 +32,7 @@ int32x4_t vt_4 = {0,0,0,32767};
 
 // Constants for Diagonalization sweeps
 #define MAX_SWEEPS 			  	20
-#define CONVERGENCE_THRESHOLD 	100
+#define CONVERGENCE_THRESHOLD 	1000
 
 // Structure to hold sin and cos values
 typedef struct {
