@@ -3,6 +3,7 @@
 #include <arm_neon.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <>
 
 FILE* f;
 // Matrix M
@@ -175,6 +176,7 @@ int32x4_t set_lane(int32x4_t vec, int32_t value, int index) {
 }
 
 void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
+	int32x4_t temp[4] = {};
     for (int i = 0; i < 4; i++) { // Row of m1
         int32x4_t row_result = vdupq_n_s32(0); // Initialize result row
         for (int j = 0; j < 4; j++) { // Column of m2
@@ -219,8 +221,11 @@ void matrix_multiply_4x4(int32x4_t* m1, int32x4_t* m2, int32x4_t* target) {
                 case 3: row_result = vsetq_lane_s32(safe, row_result, 3); break;
             }
         }
-        target[i] = row_result;
+        temp[i] = row_result;
     }
+	for (int i = 0; i < 4; i++) {
+		target[i] = temp[i];
+	}
 }
 
 void matrix_multiply(int32x2_t* m1, int32x2_t* m2, int32x2_t* target){
@@ -612,12 +617,8 @@ int main() {
 				printf("\n");
 			}
 			printf("\n");
-
-		    n = sizeof(VT) / sizeof(VT[0]);
-		    int32x4_t VT_copy[n];
-		    memcpy(VT_copy, VT, n * sizeof(VT[0]));
 			
-			matrix_multiply_4x4(VT_prime, VT_copy, VT);
+			matrix_multiply_4x4(VT_prime, VT, VT);
 			printf("Matrix VT after mult:\n");
 			for(k=0;k<4;k++){
         		for(l=0;l<4;l++) {
