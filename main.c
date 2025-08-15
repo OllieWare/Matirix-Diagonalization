@@ -131,16 +131,16 @@ int32_t sin_t(int32_t theta) {
 void get_rotatation(int32x2_t* R, int32_t theta, int flag) {
 //printf("cos_t(theta) %d", cos_t(theta));
 //printf("sin_t(theta) %d", sin_t(theta));
-if (flag==0){
+if (theta>=0){
    R[0]= vset_lane_s32(cos_t(theta), R[0], 0);
    R[0]= vset_lane_s32(-sin_t(theta), R[0], 1);
    R[1] = vset_lane_s32(sin_t(theta), R[1], 0);
    R[1] = vset_lane_s32(cos_t(theta), R[1], 1);
 } else{
-R[0]= vset_lane_s32(sin_t(theta), R[0], 0);
-R[0]= vset_lane_s32(-cos_t(theta), R[0], 1);
-R[1] = vset_lane_s32(cos_t(theta), R[1], 0);
-R[1] = vset_lane_s32(sin_t(theta), R[1], 1);
+R[0]= vset_lane_s32(cos_t(theta), R[0], 0);
+R[0]= vset_lane_s32(sin_t(theta), R[0], 1);
+R[1] = vset_lane_s32(-sin_t(theta), R[1], 0);
+R[1] = vset_lane_s32(cos_t(theta), R[1], 1);
 }
 //printf("R11: %d \n", vget_lane_s32(R[1],1));
 }
@@ -293,8 +293,8 @@ void rotate(int32x2_t* N, int32x4_t* M, int32x4_t* U, int32x4_t* VT) {
     printf("L_Angle %d \n",theta_l);
 	theta_r = theta_r / 5;
 	theta_l = theta_l / 5;
-    if(theta_r<=0){theta_r=1;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
-    if(theta_l<=0){theta_l=1; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
+    if(theta_r<=-9){theta_r=-9;mirror_L++;}else if(theta_r>9){theta_r=9; mirror_R++;}
+    if(theta_l<=-9){theta_l=-9; mirror_L++;}else if(theta_l>9){theta_l=9; mirror_L++;}
     printf("R_Index %d \n",theta_r);
     printf("L_Index %d \n",theta_l);
     int32x2_t R_L[2] = { {}, {} };
